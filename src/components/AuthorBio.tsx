@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { BookOpen, Pen, Heart, Award } from 'lucide-react'
 
 export default function AuthorBio() {
   return (
@@ -37,35 +36,18 @@ export default function AuthorBio() {
             </div>
 
             <p className="text-gray-300 text-lg leading-relaxed">
-              Hey there! I'm a poet and writer who loves playing with words and emotions. 
-              Writing has always been my way of making sense of the world - every poem, every story 
-              is a little piece of my heart. Through my anthologies and novel, I've tried to capture 
-              the everyday magic we often miss. Thanks for stopping by and reading my work!
+              Pari Meena is a rising Indian author whose words shimmer with emotion, mystery, and quiet power. 
+              Her writing drifts between lyrical stillness and inner storms, weaving heartfelt fiction that 
+              lingers long after the last page is turned.
             </p>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-              <div className="text-center p-4 bg-premium-darkGray/30 rounded-lg">
-                <BookOpen className="w-6 h-6 mx-auto text-premium-gold mb-2" />
-                <div className="text-2xl font-bold gold-text-gradient">11</div>
-                <div className="text-sm text-gray-400">Anthologies</div>
-              </div>
-              <div className="text-center p-4 bg-premium-darkGray/30 rounded-lg">
-                <Pen className="w-6 h-6 mx-auto text-premium-gold mb-2" />
-                <div className="text-2xl font-bold gold-text-gradient">1</div>
-                <div className="text-sm text-gray-400">Novel</div>
-              </div>
-              <div className="text-center p-4 bg-premium-darkGray/30 rounded-lg">
-                <Heart className="w-6 h-6 mx-auto text-premium-gold mb-2" />
-                <div className="text-2xl font-bold gold-text-gradient">850+</div>
-                <div className="text-sm text-gray-400">Poems</div>
-              </div>
-              <div className="text-center p-4 bg-premium-darkGray/30 rounded-lg">
-                <Award className="w-6 h-6 mx-auto text-premium-gold mb-2" />
-                <div className="text-2xl font-bold gold-text-gradient">10K+</div>
-                <div className="text-sm text-gray-400">Readers</div>
-              </div>
-            </div>
+            <p className="text-gray-300 text-lg leading-relaxed mt-4">
+              Whether you're seeking a poetic escape into emotional depth, or a story that quietly unravels 
+              the tangled threads of love, loss, and self-discovery, her words will take you there.
+            </p>
+            <p className="text-gray-300 text-lg leading-relaxed mt-4">
+              Follow her journey as she brings soulful characters to life — one page, one feeling, and one 
+              spiral at a time.
+            </p>
           </div>
         </div>
       </motion.div>

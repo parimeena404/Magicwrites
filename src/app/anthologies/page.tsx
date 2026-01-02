@@ -164,11 +164,6 @@ export default function AnthologiesPage() {
                       sizes="(max-width: 768px) 100vw, 288px"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <div className="flex items-center justify-center text-white/80 text-sm mb-2">
-                        <span>{anthology.poems} Poems</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
