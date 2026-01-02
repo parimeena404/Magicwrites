@@ -128,7 +128,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
             { label: 'Journal Entries', value: '150+', icon: Pen },
-            { label: 'Poetry Collections', value: '10', icon: BookOpen },
+            { label: 'Poetry Collections', value: '11', icon: BookOpen },
             { label: 'Published Novels', value: '1', icon: Sparkles },
             { label: 'Total Readers', value: '10K+', icon: Heart },
           ].map((stat, index) => (
@@ -173,17 +173,17 @@ export default function Home() {
               >
                 <Link href={work.link}>
                   <div className="premium-card overflow-hidden group cursor-pointer hover:shadow-gold-glow-lg transition-all duration-500">
-                    <div className="relative h-80 overflow-hidden">
+                    <div className="relative h-96 overflow-hidden rounded-lg">
                       <Image
                         src={work.image}
                         alt={work.title}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        className="object-contain group-hover:scale-105 transition-transform duration-500"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
                       <div className="absolute bottom-0 left-0 right-0 p-6">
-                        <span className="px-3 py-1 bg-gradient-gold text-premium-black text-xs font-bold rounded-full mb-3 inline-block">
+                        <span className="px-3 py-1 bg-gradient-gold text-premium-black text-xs font-bold rounded-full mb-3 inline-block shadow-lg">
                           {work.type}
                         </span>
                         <h3 className="text-xl font-serif font-bold text-white group-hover:text-premium-lightGold transition-colors">

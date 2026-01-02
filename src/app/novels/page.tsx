@@ -15,7 +15,7 @@ const novels = [
     rating: 4.9,
     publicationDate: 'December 2025',
     status: 'Published',
-    image: '/images/anthologies/anthology-35.jpeg',
+    image: '/images/novels/the-spiral-between-us.png',
   },
 ]
 
