@@ -54,7 +54,7 @@ export default function AnthologiesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-serif font-bold mb-6"
+            className="text-3xl md:text-5xl font-serif font-bold mb-6"
           >
             <span className="gold-text-gradient">Anthologies & Novels</span>
           </motion.h1>
@@ -62,7 +62,7 @@ export default function AnthologiesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto"
+            className="text-base md:text-lg text-gray-400 max-w-3xl mx-auto"
           >
             Explore a world of stories, poetry, and literary masterpieces
           </motion.p>
@@ -88,7 +88,7 @@ export default function AnthologiesPage() {
                       <BookOpen className="w-16 h-16 text-white/30" />
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                      <p className="text-white font-serif font-bold text-lg">
+                      <p className="text-white font-serif font-bold text-base">
                         {book.title}
                       </p>
                     </div>
@@ -107,7 +107,7 @@ export default function AnthologiesPage() {
                     </div>
                   </div>
 
-                  <h3 className="text-2xl font-serif font-bold mb-3 gold-text-gradient">
+                  <h3 className="text-xl font-serif font-bold mb-3 gold-text-gradient">
                     {book.title}
                   </h3>
 
@@ -140,10 +140,10 @@ export default function AnthologiesPage() {
             viewport={{ once: true }}
             className="premium-card p-12 text-center"
           >
-            <h2 className="text-3xl font-serif font-bold mb-4 gold-text-gradient">
+            <h2 className="text-2xl font-serif font-bold mb-4 gold-text-gradient">
               Stay Updated
             </h2>
-            <p className="text-gray-400 mb-8 text-lg">
+            <p className="text-gray-400 mb-8 text-base">
               Get notified about new releases and exclusive content
             </p>
             <button className="premium-button">

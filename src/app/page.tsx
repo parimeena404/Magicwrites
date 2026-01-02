@@ -42,7 +42,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-serif font-bold mb-6"
+            className="text-3xl md:text-5xl font-serif font-bold mb-6"
           >
             <span className="gold-text-gradient">My Journal</span>
           </motion.h1>
@@ -50,7 +50,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto"
+            className="text-base md:text-lg text-gray-400 max-w-3xl mx-auto"
           >
             A collection of thoughts, stories, and moments captured in time
           </motion.p>
@@ -86,10 +86,10 @@ export default function Home() {
               </div>
 
               {/* Content */}
-              <h2 className="text-3xl font-serif font-bold mb-4 gold-text-gradient group-hover:scale-[1.02] transition-transform">
+              <h2 className="text-xl md:text-2xl font-serif font-bold mb-4 gold-text-gradient group-hover:scale-[1.02] transition-transform">
                 {entry.title}
               </h2>
-              <p className="text-gray-300 text-lg leading-relaxed">
+              <p className="text-gray-300 text-base leading-relaxed">
                 {entry.content}
               </p>
 

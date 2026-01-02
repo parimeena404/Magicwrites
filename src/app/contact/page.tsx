@@ -45,7 +45,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-serif font-bold mb-6"
+            className="text-3xl md:text-5xl font-serif font-bold mb-6"
           >
             <span className="gold-text-gradient">Get In Touch</span>
           </motion.h1>
@@ -53,7 +53,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto"
+            className="text-base md:text-lg text-gray-400 max-w-3xl mx-auto"
           >
             Let's connect and create something magical together
           </motion.p>
@@ -75,7 +75,7 @@ export default function ContactPage() {
               <div className="w-32 h-32 mx-auto mb-4 bg-gradient-gold rounded-full flex items-center justify-center shadow-gold-glow-lg">
                 <span className="text-4xl font-serif font-bold text-premium-black">MW</span>
               </div>
-              <h2 className="text-3xl font-serif font-bold gold-text-gradient mb-2">
+              <h2 className="text-2xl font-serif font-bold gold-text-gradient mb-2">
                 Magicwrites
               </h2>
               <p className="text-gray-400">Premium Writing Platform</p>
@@ -83,7 +83,7 @@ export default function ContactPage() {
 
             {/* Contact Details */}
             <div className="premium-card p-8 space-y-6">
-              <h3 className="text-2xl font-serif font-bold gold-text-gradient mb-6">
+              <h3 className="text-xl font-serif font-bold gold-text-gradient mb-6">
                 Contact Information
               </h3>
 
@@ -93,7 +93,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Email</p>
-                  <a href="mailto:contact@magicwrites.com" className="text-lg text-premium-gold hover:text-premium-lightGold transition-colors">
+                  <a href="mailto:contact@magicwrites.com" className="text-base text-premium-gold hover:text-premium-lightGold transition-colors">
                     contact@magicwrites.com
                   </a>
                 </div>
@@ -105,7 +105,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Phone</p>
-                  <a href="tel:+1234567890" className="text-lg text-premium-gold hover:text-premium-lightGold transition-colors">
+                  <a href="tel:+1234567890" className="text-base text-premium-gold hover:text-premium-lightGold transition-colors">
                     +1 (234) 567-890
                   </a>
                 </div>
@@ -117,7 +117,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm mb-1">Location</p>
-                  <p className="text-lg text-gray-300">
+                  <p className="text-base text-gray-300">
                     Available Worldwide
                   </p>
                 </div>
@@ -162,7 +162,7 @@ export default function ContactPage() {
             transition={{ duration: 0.6 }}
             className="premium-card p-8"
           >
-            <h3 className="text-2xl font-serif font-bold gold-text-gradient mb-6">
+            <h3 className="text-xl font-serif font-bold gold-text-gradient mb-6">
               Send a Message
             </h3>
 

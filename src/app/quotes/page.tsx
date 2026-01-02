@@ -137,7 +137,7 @@ export default function QuotesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-serif font-bold mb-6"
+            className="text-3xl md:text-5xl font-serif font-bold mb-6"
           >
             <span className="gold-text-gradient">Quotes & Wisdom</span>
           </motion.h1>
@@ -145,7 +145,7 @@ export default function QuotesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto"
+            className="text-base md:text-lg text-gray-400 max-w-3xl mx-auto"
           >
             Short notes and profound thoughts to inspire your journey
           </motion.p>
@@ -164,7 +164,7 @@ export default function QuotesPage() {
               className="premium-card p-8 group hover:shadow-gold-glow-lg transition-all duration-300"
             >
               {/* Quote Text */}
-              <blockquote className="text-2xl md:text-3xl font-serif italic text-gray-200 mb-6 leading-relaxed">
+              <blockquote className="text-lg md:text-xl font-serif italic text-gray-200 mb-6 leading-relaxed">
                 "{quote.text}"
               </blockquote>
 

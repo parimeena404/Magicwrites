@@ -38,7 +38,7 @@ export default function Navigation() {
               <Feather className="w-8 h-8 text-premium-gold group-hover:rotate-12 transition-transform duration-300" />
               <div className="absolute inset-0 blur-xl bg-premium-gold/30 group-hover:bg-premium-gold/50 transition-all"></div>
             </div>
-            <span className="text-2xl font-serif font-bold gold-text-gradient">
+            <span className="text-xl font-serif font-bold gold-text-gradient">
               Magicwrites
             </span>
           </Link>
@@ -49,7 +49,7 @@ export default function Navigation() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`text-lg font-medium transition-all duration-300 relative group ${
+                className={`text-base font-medium transition-all duration-300 relative group ${
                   pathname === item.href
                     ? 'text-premium-gold'
                     : 'text-gray-300 hover:text-premium-gold'
@@ -88,7 +88,7 @@ export default function Navigation() {
                   key={item.name}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`block text-lg font-medium transition-colors py-2 ${
+                  className={`block text-base font-medium transition-colors py-2 ${
                     pathname === item.href
                       ? 'text-premium-gold'
                       : 'text-gray-300 hover:text-premium-gold'
