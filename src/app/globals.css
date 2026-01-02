@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 10 10% 4%;
+    --foreground: 0 0% 98%;
+  }
+
+  * {
+    @apply border-gray-800;
+  }
+
+  body {
+    @apply bg-[#0a0a0a] text-gray-50;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .gold-text-gradient {
+    @apply bg-gradient-to-r from-premium-darkGold via-premium-gold to-premium-lightGold bg-clip-text text-transparent;
+  }
+  
+  .gold-border-gradient {
+    border-image: linear-gradient(135deg, #B8860B, #D4AF37, #FFD700) 1;
+  }
+  
+  .premium-card {
+    @apply bg-gradient-to-br from-premium-darkGray to-premium-black border border-premium-gold/20 rounded-xl shadow-gold-3d backdrop-blur-sm;
+  }
+  
+  .premium-button {
+    @apply bg-gradient-gold text-premium-black font-semibold px-6 py-3 rounded-lg shadow-gold-glow hover:shadow-gold-glow-lg transition-all duration-300 transform hover:scale-105;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-premium-black;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gradient-gold rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply opacity-80;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Text selection */
+::selection {
+  @apply bg-premium-gold text-premium-black;
+}
