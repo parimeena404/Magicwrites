@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { BookOpen, Calendar, Heart, Sparkles, Star } from 'lucide-react'
 import Image from 'next/image'
+import AuthorBio from '@/components/AuthorBio'
 
 // Anthologies data with actual images
 const anthologies = [
@@ -11,9 +12,7 @@ const anthologies = [
     title: 'Drums of Dawn',
     description: 'A rhythmic collection of verses that awaken the soul with each beat. Experience the power of words that resonate like drums at the break of day.',
     publicationDate: 'December 2025',
-    pages: 256,
     poems: 87,
-    rating: 4.9,
     image: '/images/anthologies/Drums of Dawn.jpeg',
     themes: ['Awakening', 'Rhythm', 'Hope'],
   },
@@ -22,9 +21,7 @@ const anthologies = [
     title: 'Network is Networth',
     description: 'Exploring the connections that bind us and the value of relationships. Poetry that celebrates the networks we build in life.',
     publicationDate: 'November 2025',
-    pages: 192,
     poems: 64,
-    rating: 4.8,
     image: '/images/anthologies/Network is Networth.jpeg',
     themes: ['Connection', 'Relationships', 'Value'],
   },
@@ -33,9 +30,7 @@ const anthologies = [
     title: 'Petals 6th Edition',
     description: 'Delicate verses that unfold like petals, revealing beauty in every layer. The beloved sixth edition of this timeless collection.',
     publicationDate: 'October 2025',
-    pages: 224,
     poems: 72,
-    rating: 4.9,
     image: '/images/anthologies/Petals 6th edition.jpeg',
     themes: ['Beauty', 'Nature', 'Delicacy'],
   },
@@ -44,9 +39,7 @@ const anthologies = [
     title: 'Quills of Fifty',
     description: 'Fifty brilliant minds, fifty unique voices. A collaborative anthology celebrating diverse perspectives and powerful narratives.',
     publicationDate: 'September 2025',
-    pages: 280,
     poems: 95,
-    rating: 4.8,
     image: '/images/anthologies/Quills of Fifty.jpeg',
     themes: ['Collaboration', 'Diversity', 'Voices'],
   },
@@ -55,9 +48,7 @@ const anthologies = [
     title: 'Soulprints of Friendship',
     description: 'The indelible marks friends leave on our hearts. Poetry that honors the bonds that shape who we become.',
     publicationDate: 'August 2025',
-    pages: 210,
     poems: 68,
-    rating: 4.9,
     image: '/images/anthologies/Soulprints of Friendship.jpeg',
     themes: ['Friendship', 'Connection', 'Love'],
   },
@@ -66,9 +57,7 @@ const anthologies = [
     title: "The Earth's Unwritten Story",
     description: 'Tales of our planet waiting to be told. Environmental poetry that speaks for those without a voice.',
     publicationDate: 'July 2025',
-    pages: 245,
     poems: 81,
-    rating: 4.8,
     image: '/images/anthologies/The Earth\'s unwritten story.jpeg',
     themes: ['Environment', 'Nature', 'Awareness'],
   },
@@ -77,9 +66,7 @@ const anthologies = [
     title: 'The Ink of Her Legacy',
     description: 'Celebrating the powerful voices of women writers. A tribute to those who paved the way with their words.',
     publicationDate: 'June 2025',
-    pages: 268,
     poems: 89,
-    rating: 4.9,
     image: '/images/anthologies/The Ink of her Legacy.jpeg',
     themes: ['Women', 'Legacy', 'Empowerment'],
   },
@@ -88,9 +75,7 @@ const anthologies = [
     title: 'The Sindoor Diaries',
     description: 'Stories woven in tradition and emotion. Poetry that explores cultural identity and personal journeys.',
     publicationDate: 'May 2025',
-    pages: 230,
     poems: 76,
-    rating: 4.8,
     image: '/images/anthologies/The Sindoor Diaries.jpeg',
     themes: ['Culture', 'Identity', 'Journey'],
   },
@@ -99,9 +84,7 @@ const anthologies = [
     title: 'Where Darkness Meets Dawn',
     description: 'Poetry born in the twilight hours. Verses that bridge the gap between night and day, despair and hope.',
     publicationDate: 'April 2025',
-    pages: 220,
     poems: 73,
-    rating: 4.9,
     image: '/images/anthologies/Where darkness meets dawn.jpeg',
     themes: ['Hope', 'Transformation', 'Balance'],
   },
@@ -110,9 +93,7 @@ const anthologies = [
     title: 'Whispers Beneath the Night Sky',
     description: 'Secrets shared under starlight. A collection of intimate verses that capture the magic of night.',
     publicationDate: 'March 2025',
-    pages: 198,
     poems: 66,
-    rating: 4.8,
     image: '/images/anthologies/Whispers beneath the night sky.jpeg',
     themes: ['Night', 'Mystery', 'Magic'],
   },
@@ -121,9 +102,7 @@ const anthologies = [
     title: 'Write for India',
     description: 'A patriotic anthology celebrating the spirit of India through powerful poetry and prose.',
     publicationDate: 'February 2025',
-    pages: 285,
     poems: 94,
-    rating: 4.9,
     image: '/images/anthologies/Write for India.jpeg',
     themes: ['Patriotism', 'Culture', 'Unity'],
   },
@@ -163,29 +142,8 @@ export default function AnthologiesPage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: 'Anthologies', value: '11', icon: BookOpen },
-            { label: 'Total Poems', value: '850+', icon: Heart },
-            { label: 'Avg Rating', value: '4.8', icon: Star },
-            { label: 'Published', value: '2024-25', icon: Calendar },
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
-              className="premium-card p-6 text-center hover:shadow-gold-glow-lg transition-all duration-300 hover:scale-105"
-            >
-              <stat.icon className="w-8 h-8 mx-auto text-premium-gold mb-2" />
-              <div className="text-2xl font-bold gold-text-gradient mb-1">{stat.value}</div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      {/* Author Bio */}
+      <AuthorBio />
 
       {/* Anthologies Grid */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
@@ -224,16 +182,6 @@ export default function AnthologiesPage() {
                     <span className="px-4 py-1 bg-gradient-gold text-premium-black text-sm font-bold rounded-full shadow-lg">
                       Poetry Collection
                     </span>
-                    <div className="flex items-center space-x-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={18}
-                          className={i < Math.floor(anthology.rating) ? 'text-premium-gold fill-premium-gold' : 'text-gray-600'}
-                        />
-                      ))}
-                      <span className="ml-2 text-premium-gold font-semibold">{anthology.rating}</span>
-                    </div>
                   </div>
 
                   <h2 className="text-3xl md:text-4xl font-serif font-bold gold-text-gradient group-hover:scale-105 transition-transform origin-left">

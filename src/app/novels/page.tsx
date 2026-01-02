@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { BookOpen, Star, Clock, Award } from 'lucide-react'
 import Image from 'next/image'
+import AuthorBio from '@/components/AuthorBio'
 
 // Sample novels data
 const novels = [
@@ -11,8 +12,6 @@ const novels = [
     title: 'The Spiral Between Us - Book1',
     description: 'A captivating journey through love, connection, and the intricate spirals of human relationships. Discover how two souls intertwine in ways they never imagined.',
     genre: 'Romance/Fiction',
-    pages: 350,
-    rating: 4.9,
     publicationDate: 'December 2025',
     status: 'Published',
     image: '/images/novels/the-spiral-between-us.png',
@@ -53,29 +52,8 @@ export default function NovelsPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: 'Published Novels', value: '1', icon: BookOpen },
-            { label: 'Average Rating', value: '4.9', icon: Star },
-            { label: 'Reviews', value: '150+', icon: Award },
-            { label: 'Year', value: '2025', icon: Clock },
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="premium-card p-6 text-center hover:shadow-gold-glow-lg transition-all duration-300"
-            >
-              <stat.icon className="w-8 h-8 mx-auto text-premium-gold mb-2" />
-              <div className="text-2xl font-bold gold-text-gradient mb-1">{stat.value}</div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      {/* Author Bio */}
+      <AuthorBio />
 
       {/* Novels Grid */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
@@ -116,16 +94,9 @@ export default function NovelsPage() {
                     <span className="px-4 py-1 bg-gradient-gold text-premium-black text-sm font-bold rounded-full shadow-lg">
                       {novel.genre}
                     </span>
-                    <div className="flex items-center space-x-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={18}
-                          className={i < Math.floor(novel.rating) ? 'text-premium-gold fill-premium-gold' : 'text-gray-600'}
-                        />
-                      ))}
-                      <span className="ml-2 text-premium-gold font-semibold">{novel.rating}</span>
-                    </div>
+                    <span className="px-4 py-1 bg-premium-darkGray border border-premium-gold/30 text-premium-gold text-sm font-semibold rounded-full">
+                      {novel.status}
+                    </span>
                   </div>
 
                   <h2 className="text-3xl md:text-4xl font-serif font-bold gold-text-gradient group-hover:scale-105 transition-transform origin-left">
@@ -137,10 +108,6 @@ export default function NovelsPage() {
                   </p>
 
                   <div className="flex flex-wrap items-center gap-6 text-gray-400 text-sm pt-4">
-                    <div className="flex items-center space-x-2">
-                      <BookOpen size={18} className="text-premium-gold" />
-                      <span>{novel.pages} pages</span>
-                    </div>
                     <div className="flex items-center space-x-2">
                       <Clock size={18} className="text-premium-gold" />
                       <span>{novel.publicationDate}</span>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, MapPin, Phone, Send, Instagram } from 'lucide-react'
+import { Mail, MapPin, Send, Instagram } from 'lucide-react'
 import Image from 'next/image'
 
 export default function ContactPage() {
@@ -154,18 +154,6 @@ export default function ContactPage() {
                   <p className="text-gray-400 text-sm mb-1">Email</p>
                   <a href="mailto:magicwritesofficial@gmail.com" className="text-base text-premium-gold hover:text-premium-lightGold transition-colors">
                     magicwritesofficial@gmail.com
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="p-3 bg-gradient-gold rounded-lg">
-                  <Phone className="w-6 h-6 text-premium-black" />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Phone</p>
-                  <a href="tel:+1234567890" className="text-base text-premium-gold hover:text-premium-lightGold transition-colors">
-                    +1 (234) 567-890
                   </a>
                 </div>
               </div>

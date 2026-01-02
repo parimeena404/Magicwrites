@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, MessageCircle, Share2, Clock } from 'lucide-react'
+import { Heart, MessageCircle, Share2, Clock, Plus, Edit2, Trash2, Sparkles } from 'lucide-react'
 
 interface Quote {
   id: number
@@ -21,67 +21,67 @@ interface Comment {
   date: string
 }
 
-// Sample quotes data
-const initialQuotes: Quote[] = [
-  {
-    id: 1,
-    text: 'In the silence between heartbeats, we find the rhythm of eternity.',
-    author: 'Magicwrites',
-    date: '2 hours ago',
-    likes: 156,
-    isLiked: false,
-    comments: [
-      { id: 1, author: 'Reader1', text: 'This is beautiful!', date: '1 hour ago' },
-      { id: 2, author: 'Reader2', text: 'So profound ✨', date: '30 min ago' },
-    ],
-  },
-  {
-    id: 2,
-    text: 'The moon whispers secrets that daylight dares not speak.',
-    author: 'Magicwrites',
-    date: '5 hours ago',
-    likes: 234,
-    isLiked: true,
-    comments: [
-      { id: 1, author: 'Reader3', text: 'Love this!', date: '3 hours ago' },
-    ],
-  },
-  {
-    id: 3,
-    text: 'Words are the bridges we build between souls.',
-    author: 'Magicwrites',
-    date: '1 day ago',
-    likes: 389,
-    isLiked: false,
-    comments: [],
-  },
-  {
-    id: 4,
-    text: 'In every ending lies the seed of a new beginning.',
-    author: 'Magicwrites',
-    date: '2 days ago',
-    likes: 421,
-    isLiked: false,
-    comments: [
-      { id: 1, author: 'Reader4', text: 'Needed this today', date: '1 day ago' },
-      { id: 2, author: 'Reader5', text: '🙏', date: '1 day ago' },
-    ],
-  },
-]
-
 export default function QuotesPage() {
-  const [quotes, setQuotes] = useState<Quote[]>(initialQuotes)
+  const [quotes, setQuotes] = useState<Quote[]>([])
+  const [isAuthor] = useState(true) // Set to true for author access
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [newQuote, setNewQuote] = useState({ text: '', author: 'Magicwrites' })
+  const [editingQuote, setEditingQuote] = useState<number | null>(null)
   const [expandedQuote, setExpandedQuote] = useState<number | null>(null)
   const [newComment, setNewComment] = useState<{ [key: number]: string }>({})
 
+  const handleCreateQuote = () => {
+    if (newQuote.text.trim()) {
+      const quote: Quote = {
+        id: Date.now(),
+        ...newQuote,
+        date: 'Just now',
+        likes: 0,
+        comments: [],
+        isLiked: false,
+      }
+      setQuotes([quote, ...quotes])
+      setNewQuote({ text: '', author: 'Magicwrites' })
+      setShowCreateForm(false)
+    }
+  }
+
+  const handleEditQuote = (id: number) => {
+    const quote = quotes.find(q => q.id === id)
+    if (quote) {
+      setNewQuote({ text: quote.text, author: quote.author })
+      setEditingQuote(id)
+      setShowCreateForm(true)
+    }
+  }
+
+  const handleUpdateQuote = () => {
+    if (editingQuote && newQuote.text.trim()) {
+      setQuotes(quotes.map(quote =>
+        quote.id === editingQuote
+          ? { ...quote, text: newQuote.text, author: newQuote.author }
+          : quote
+      ))
+      setNewQuote({ text: '', author: 'Magicwrites' })
+      setEditingQuote(null)
+      setShowCreateForm(false)
+    }
+  }
+
+  const handleDeleteQuote = (id: number) => {
+    if (confirm('Are you sure you want to delete this quote?')) {
+      setQuotes(quotes.filter(quote => quote.id !== id))
+    }
+  }
+
   const handleLike = (quoteId: number) => {
-    setQuotes(quotes.map(quote => 
-      quote.id === quoteId 
-        ? { 
-            ...quote, 
-            isLiked: !quote.isLiked,
-            likes: quote.isLiked ? quote.likes - 1 : quote.likes + 1
-          }
+    setQuotes(quotes.map(quote =>
+      quote.id === quoteId
+        ? {
+          ...quote,
+          isLiked: !quote.isLiked,
+          likes: quote.isLiked ? quote.likes - 1 : quote.likes + 1
+        }
         : quote
     ))
   }
@@ -98,34 +98,32 @@ export default function QuotesPage() {
         console.log('Error sharing:', err)
       }
     } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(`"${quote.text}" - ${quote.author}`)
+      navigator.clipboard.writeText(quote.text)
       alert('Quote copied to clipboard!')
     }
   }
 
   const handleAddComment = (quoteId: number) => {
     const commentText = newComment[quoteId]?.trim()
-    if (!commentText) return
-
-    setQuotes(quotes.map(quote => 
-      quote.id === quoteId 
-        ? {
+    if (commentText) {
+      setQuotes(quotes.map(quote =>
+        quote.id === quoteId
+          ? {
             ...quote,
             comments: [
               ...quote.comments,
               {
-                id: quote.comments.length + 1,
-                author: 'You',
+                id: Date.now(),
+                author: isAuthor ? 'Magicwrites' : 'Reader',
                 text: commentText,
-                date: 'Just now',
+                date: 'Just now'
               }
             ]
           }
-        : quote
-    ))
-
-    setNewComment({ ...newComment, [quoteId]: '' })
+          : quote
+      ))
+      setNewComment({ ...newComment, [quoteId]: '' })
+    }
   }
 
   return (
@@ -140,7 +138,7 @@ export default function QuotesPage() {
             transition={{ duration: 0.8 }}
             className="mb-6"
           >
-            <MessageCircle className="w-16 h-16 mx-auto text-premium-gold animate-pulse" />
+            <Sparkles className="w-16 h-16 mx-auto text-premium-gold animate-pulse" />
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -148,7 +146,7 @@ export default function QuotesPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-4xl md:text-6xl font-serif font-bold mb-6"
           >
-            <span className="gold-text-gradient">Quotes & Wisdom</span>
+            <span className="gold-text-gradient">Inspiring Quotes</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -156,136 +154,232 @@ export default function QuotesPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto"
           >
-            Short notes and profound thoughts to inspire your journey
+            {isAuthor ? 'Share your wisdom with the world' : 'Words that inspire and transform'}
           </motion.p>
         </div>
       </section>
 
-      {/* Quotes Grid */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {quotes.map((quote, index) => (
-            <motion.div
-              key={quote.id}
-              initial={{ opacity: 0, y: 30 }}
+      {/* Author Controls */}
+      {isAuthor && (
+        <section className="px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="max-w-4xl mx-auto">
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="premium-card p-8 group hover:shadow-gold-glow-lg transition-all duration-300 relative overflow-hidden"
+              onClick={() => {
+                setShowCreateForm(!showCreateForm)
+                setEditingQuote(null)
+                setNewQuote({ text: '', author: 'Magicwrites' })
+              }}
+              className="premium-button w-full sm:w-auto flex items-center space-x-2 mx-auto"
             >
-              {/* Decorative Background */}
-              <div className="absolute top-0 right-0 w-48 h-48 bg-premium-gold/5 rounded-full blur-3xl group-hover:bg-premium-gold/10 transition-all duration-500"></div>
-              
-              {/* Quote Text */}
-              <blockquote className="text-xl md:text-2xl font-serif italic text-gray-200 mb-6 leading-relaxed relative z-10">
-                <span className="text-premium-gold text-5xl absolute -left-2 -top-2 opacity-30">"</span>
-                <span className="pl-6">{quote.text}</span>
-                <span className="text-premium-gold text-5xl ml-1 opacity-30">"</span>
-              </blockquote>
+              <Plus size={20} />
+              <span>Add New Quote</span>
+            </motion.button>
 
-              {/* Author & Date */}
-              <div className="flex items-center justify-between mb-6 pb-6 border-b border-premium-gold/20 relative z-10">
-                <div>
-                  <p className="text-premium-gold font-bold text-lg">— {quote.author}</p>
-                  <p className="text-gray-500 text-sm flex items-center mt-1">
-                    <Clock size={14} className="mr-1" />
-                    {quote.date}
-                  </p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-6 relative z-10">
-                <button
-                  onClick={() => handleLike(quote.id)}
-                  className={`flex items-center space-x-2 transition-all group/like ${
-                    quote.isLiked 
-                      ? 'text-red-500 scale-110' 
-                      : 'text-gray-400 hover:text-red-500'
-                  }`}
+            {/* Create/Edit Form */}
+            <AnimatePresence>
+              {showCreateForm && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="premium-card p-6 mt-6"
                 >
-                  <Heart 
-                    size={22} 
-                    fill={quote.isLiked ? 'currentColor' : 'none'}
-                    className="transition-transform group-hover/like:scale-125"
-                  />
-                  <span className="font-semibold">{quote.likes}</span>
-                </button>
-
-                <button
-                  onClick={() => setExpandedQuote(expandedQuote === quote.id ? null : quote.id)}
-                  className="flex items-center space-x-2 text-gray-400 hover:text-premium-gold transition-colors group/comment"
-                >
-                  <MessageCircle size={22} className="group-hover/comment:scale-110 transition-transform" />
-                  <span className="font-semibold">{quote.comments.length}</span>
-                </button>
-
-                <button
-                  onClick={() => handleShare(quote)}
-                  className="flex items-center space-x-2 text-gray-400 hover:text-premium-gold transition-colors group/share ml-auto"
-                >
-                  <Share2 size={22} className="group-hover/share:rotate-12 transition-transform" />
-                  <span className="font-semibold">Share</span>
-                </button>
-              </div>
-
-              {/* Comments Section */}
-              <AnimatePresence>
-                {expandedQuote === quote.id && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-6 pt-6 border-t border-premium-gold/20 space-y-4 relative z-10"
-                  >
-                    {/* Existing Comments */}
-                    {quote.comments.map((comment, idx) => (
-                      <motion.div
-                        key={comment.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.1 }}
-                        className="bg-premium-darkGray/50 rounded-lg p-4 border border-premium-gold/10 hover:border-premium-gold/30 transition-colors"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-bold text-premium-gold text-sm">
-                            {comment.author}
-                          </span>
-                          <span className="text-gray-500 text-xs">{comment.date}</span>
-                        </div>
-                        <p className="text-gray-300 leading-relaxed">{comment.text}</p>
-                      </motion.div>
-                    ))}
-
-                    {/* Add Comment */}
-                    <div className="flex gap-3 pt-2">
+                  <h3 className="text-xl font-serif font-bold gold-text-gradient mb-4">
+                    {editingQuote ? 'Edit Quote' : 'Create New Quote'}
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-gray-300 font-semibold mb-2">Quote Text</label>
+                      <textarea
+                        value={newQuote.text}
+                        onChange={(e) => setNewQuote({ ...newQuote, text: e.target.value })}
+                        placeholder="Enter your inspiring quote..."
+                        rows={4}
+                        className="w-full bg-premium-darkGray/50 border border-premium-gold/30 rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 font-semibold mb-2">Author</label>
                       <input
                         type="text"
-                        value={newComment[quote.id] || ''}
-                        onChange={(e) => setNewComment({ ...newComment, [quote.id]: e.target.value })}
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddComment(quote.id)}
-                        placeholder="Share your thoughts..."
-                        className="flex-1 bg-premium-darkGray/50 border border-premium-gold/30 rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all"
+                        value={newQuote.author}
+                        onChange={(e) => setNewQuote({ ...newQuote, author: e.target.value })}
+                        className="w-full bg-premium-darkGray/50 border border-premium-gold/30 rounded-lg px-4 py-3 text-gray-300 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all"
                       />
+                    </div>
+                    <div className="flex gap-4">
                       <button
-                        onClick={() => handleAddComment(quote.id)}
-                        className="px-8 py-3 bg-gradient-gold text-premium-black font-bold rounded-lg hover:shadow-gold-glow-lg transition-all transform hover:scale-105"
+                        onClick={editingQuote ? handleUpdateQuote : handleCreateQuote}
+                        className="premium-button flex-1"
                       >
-                        Post
+                        {editingQuote ? 'Update Quote' : 'Publish Quote'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowCreateForm(false)
+                          setEditingQuote(null)
+                          setNewQuote({ text: '', author: 'Magicwrites' })
+                        }}
+                        className="flex-1 px-6 py-3 border-2 border-premium-gold/30 text-gray-300 font-semibold rounded-lg hover:bg-premium-gold/10 transition-all"
+                      >
+                        Cancel
                       </button>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
-        </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </section>
+      )}
 
-        {/* Load More */}
-        <div className="text-center mt-12">
-          <button className="premium-button px-12">
-            Load More Quotes
-          </button>
+      {/* Quotes List */}
+      <section className="px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {quotes.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="premium-card p-12 text-center"
+            >
+              <Sparkles className="w-20 h-20 mx-auto text-premium-gold/30 mb-6" />
+              <h3 className="text-2xl font-serif font-bold text-gray-300 mb-4">
+                No Quotes Yet
+              </h3>
+              <p className="text-gray-400 text-lg mb-6">
+                {isAuthor
+                  ? 'Start sharing your inspiring quotes with the world'
+                  : 'Check back soon for inspiring quotes'}
+              </p>
+              {isAuthor && (
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="premium-button"
+                >
+                  Add First Quote
+                </button>
+              )}
+            </motion.div>
+          ) : (
+            quotes.map((quote, index) => (
+              <motion.article
+                key={quote.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="premium-card p-8 hover:shadow-gold-glow-lg transition-all duration-300"
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-gradient-gold rounded-full flex items-center justify-center">
+                      <span className="text-premium-black font-bold text-lg">
+                        {quote.author.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-200">{quote.author}</p>
+                      <p className="text-sm text-gray-400 flex items-center space-x-1">
+                        <Clock size={14} />
+                        <span>{quote.date}</span>
+                      </p>
+                    </div>
+                  </div>
+                  {isAuthor && (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditQuote(quote.id)}
+                        className="p-2 text-premium-gold hover:bg-premium-gold/10 rounded-lg transition-colors"
+                        aria-label="Edit"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteQuote(quote.id)}
+                        className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+                        aria-label="Delete"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <blockquote className="text-xl md:text-2xl font-serif text-gray-200 mb-6 leading-relaxed italic">
+                  "{quote.text}"
+                </blockquote>
+
+                <div className="flex items-center justify-between pt-4 border-t border-premium-gold/20">
+                  <div className="flex items-center space-x-6">
+                    <button
+                      onClick={() => handleLike(quote.id)}
+                      className={`flex items-center space-x-2 transition-colors ${quote.isLiked ? 'text-premium-gold' : 'text-gray-400 hover:text-premium-gold'
+                        }`}
+                    >
+                      <Heart size={20} className={quote.isLiked ? 'fill-current' : ''} />
+                      <span className="font-medium">{quote.likes}</span>
+                    </button>
+                    <button
+                      onClick={() => setExpandedQuote(expandedQuote === quote.id ? null : quote.id)}
+                      className="flex items-center space-x-2 text-gray-400 hover:text-premium-gold transition-colors"
+                    >
+                      <MessageCircle size={20} />
+                      <span className="font-medium">{quote.comments.length}</span>
+                    </button>
+                    <button
+                      onClick={() => handleShare(quote)}
+                      className="flex items-center space-x-2 text-gray-400 hover:text-premium-gold transition-colors"
+                    >
+                      <Share2 size={20} />
+                      <span className="font-medium">Share</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Comments Section */}
+                <AnimatePresence>
+                  {expandedQuote === quote.id && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-6 pt-6 border-t border-premium-gold/20"
+                    >
+                      <h4 className="font-semibold text-gray-300 mb-4">Comments</h4>
+                      <div className="space-y-4 mb-4">
+                        {quote.comments.map((comment) => (
+                          <div key={comment.id} className="bg-premium-darkGray/30 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-semibold text-gray-300">{comment.author}</span>
+                              <span className="text-sm text-gray-500">{comment.date}</span>
+                            </div>
+                            <p className="text-gray-400">{comment.text}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          value={newComment[quote.id] || ''}
+                          onChange={(e) => setNewComment({ ...newComment, [quote.id]: e.target.value })}
+                          onKeyPress={(e) => e.key === 'Enter' && handleAddComment(quote.id)}
+                          placeholder="Add a comment..."
+                          className="flex-1 bg-premium-darkGray/50 border border-premium-gold/30 rounded-lg px-4 py-2 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold transition-all"
+                        />
+                        <button
+                          onClick={() => handleAddComment(quote.id)}
+                          className="px-6 py-2 bg-gradient-gold text-premium-black font-semibold rounded-lg hover:shadow-gold-glow transition-all"
+                        >
+                          Post
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.article>
+            ))
+          )}
         </div>
       </section>
     </div>
