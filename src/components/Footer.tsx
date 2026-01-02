@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Mail, Instagram, Twitter, Facebook, Feather } from 'lucide-react'
+import { Mail, Instagram, Twitter, Facebook } from 'lucide-react'
+import Image from 'next/image'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -13,7 +14,14 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <Feather className="w-8 h-8 text-premium-gold" />
+              <div className="relative w-10 h-10">
+                <Image
+                  src="/magicwrites_logo.jpg"
+                  alt="Magicwrites Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <span className="text-2xl font-serif font-bold gold-text-gradient">
                 Magicwrites
               </span>
@@ -35,6 +43,11 @@ export default function Footer() {
               <li>
                 <Link href="/anthologies" className="text-gray-400 hover:text-premium-gold transition-colors">
                   Anthologies
+                </Link>
+              </li>
+              <li>
+                <Link href="/novels" className="text-gray-400 hover:text-premium-gold transition-colors">
+                  Novels
                 </Link>
               </li>
               <li>

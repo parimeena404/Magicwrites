@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Feather } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 
 const navItems = [
   { name: 'Journal', href: '/' },
   { name: 'Anthologies', href: '/anthologies' },
+  { name: 'Novels', href: '/novels' },
   { name: 'Quotes', href: '/quotes' },
   { name: 'Contact', href: '/contact' },
 ]
@@ -34,9 +36,14 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <Feather className="w-8 h-8 text-premium-gold group-hover:rotate-12 transition-transform duration-300" />
-              <div className="absolute inset-0 blur-xl bg-premium-gold/30 group-hover:bg-premium-gold/50 transition-all"></div>
+            <div className="relative w-12 h-12">
+              <Image
+                src="/magicwrites_logo.jpg"
+                alt="Magicwrites Logo"
+                fill
+                className="object-contain group-hover:scale-110 transition-transform duration-300"
+                priority
+              />
             </div>
             <span className="text-xl font-serif font-bold gold-text-gradient">
               Magicwrites

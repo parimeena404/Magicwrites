@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, MapPin, Phone, Send, Instagram, Twitter, Facebook } from 'lucide-react'
+import Image from 'next/image'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,10 +15,46 @@ export default function ContactPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
+
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {}
+    
+    if (!formData.name.trim()) {
+      errors.name = 'Name is required'
+    } else if (formData.name.length < 2) {
+      errors.name = 'Name must be at least 2 characters'
+    }
+    
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email'
+    }
+    
+    if (!formData.subject.trim()) {
+      errors.subject = 'Subject is required'
+    }
+    
+    if (!formData.message.trim()) {
+      errors.message = 'Message is required'
+    } else if (formData.message.length < 10) {
+      errors.message = 'Message must be at least 10 characters'
+    }
+    
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+    
     setIsSubmitting(true)
+    setFormErrors({})
     
     // Simulate form submission
     setTimeout(() => {
@@ -25,35 +62,52 @@ export default function ContactPage() {
       setSubmitStatus('success')
       setFormData({ name: '', email: '', subject: '', message: '' })
       
-      setTimeout(() => setSubmitStatus('idle'), 3000)
+      setTimeout(() => setSubmitStatus('idle'), 5000)
     }, 1500)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     })
+    // Clear error for this field when user starts typing
+    if (formErrors[name]) {
+      setFormErrors({
+        ...formErrors,
+        [name]: ''
+      })
+    }
   }
 
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-premium-gold/5 to-transparent"></div>
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="mb-6"
+          >
+            <Mail className="w-16 h-16 mx-auto text-premium-gold animate-pulse" />
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-3xl md:text-5xl font-serif font-bold mb-6"
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-4xl md:text-6xl font-serif font-bold mb-6"
           >
             <span className="gold-text-gradient">Get In Touch</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-base md:text-lg text-gray-400 max-w-3xl mx-auto"
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto"
           >
             Let's connect and create something magical together
           </motion.p>
@@ -70,10 +124,15 @@ export default function ContactPage() {
             transition={{ duration: 0.6 }}
             className="space-y-8"
           >
-            {/* Logo Placeholder */}
+            {/* Logo */}
             <div className="premium-card p-8 text-center">
-              <div className="w-32 h-32 mx-auto mb-4 bg-gradient-gold rounded-full flex items-center justify-center shadow-gold-glow-lg">
-                <span className="text-4xl font-serif font-bold text-premium-black">MW</span>
+              <div className="relative w-32 h-32 mx-auto mb-4">
+                <Image
+                  src="/magicwrites_logo.jpg"
+                  alt="Magicwrites Logo"
+                  fill
+                  className="object-contain rounded-lg shadow-gold-glow-lg"
+                />
               </div>
               <h2 className="text-2xl font-serif font-bold gold-text-gradient mb-2">
                 Magicwrites
@@ -126,30 +185,30 @@ export default function ContactPage() {
 
             {/* Social Media */}
             <div className="premium-card p-8">
-              <h3 className="text-xl font-serif font-bold gold-text-gradient mb-4">
+              <h3 className="text-xl font-serif font-bold gold-text-gradient mb-6">
                 Connect With Me
               </h3>
               <div className="flex space-x-4">
                 <a
                   href="#"
-                  className="p-3 bg-premium-gold/10 rounded-lg hover:bg-gradient-gold hover:scale-110 transition-all group"
+                  className="p-4 bg-premium-gold/10 rounded-xl hover:bg-gradient-gold hover:scale-110 transition-all group shadow-lg"
                   aria-label="Instagram"
                 >
-                  <Instagram className="w-6 h-6 text-premium-gold group-hover:text-premium-black" />
+                  <Instagram className="w-6 h-6 text-premium-gold group-hover:text-premium-black transition-colors" />
                 </a>
                 <a
                   href="#"
-                  className="p-3 bg-premium-gold/10 rounded-lg hover:bg-gradient-gold hover:scale-110 transition-all group"
+                  className="p-4 bg-premium-gold/10 rounded-xl hover:bg-gradient-gold hover:scale-110 transition-all group shadow-lg"
                   aria-label="Twitter"
                 >
-                  <Twitter className="w-6 h-6 text-premium-gold group-hover:text-premium-black" />
+                  <Twitter className="w-6 h-6 text-premium-gold group-hover:text-premium-black transition-colors" />
                 </a>
                 <a
                   href="#"
-                  className="p-3 bg-premium-gold/10 rounded-lg hover:bg-gradient-gold hover:scale-110 transition-all group"
+                  className="p-4 bg-premium-gold/10 rounded-xl hover:bg-gradient-gold hover:scale-110 transition-all group shadow-lg"
                   aria-label="Facebook"
                 >
-                  <Facebook className="w-6 h-6 text-premium-gold group-hover:text-premium-black" />
+                  <Facebook className="w-6 h-6 text-premium-gold group-hover:text-premium-black transition-colors" />
                 </a>
               </div>
             </div>
@@ -168,8 +227,8 @@ export default function ContactPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                  Your Name
+                <label htmlFor="name" className="block text-sm font-semibold text-gray-300 mb-2">
+                  Your Name *
                 </label>
                 <input
                   type="text"
@@ -177,15 +236,17 @@ export default function ContactPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  required
-                  className="w-full bg-premium-darkGray/50 border border-premium-gold/20 rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold transition-colors"
+                  className={`w-full bg-premium-darkGray/50 border ${formErrors.name ? 'border-red-500' : 'border-premium-gold/30'} rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all`}
                   placeholder="John Doe"
                 />
+                {formErrors.name && (
+                  <p className="mt-1 text-sm text-red-500">{formErrors.name}</p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                  Email Address
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-2">
+                  Email Address *
                 </label>
                 <input
                   type="email"
@@ -193,15 +254,17 @@ export default function ContactPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  required
-                  className="w-full bg-premium-darkGray/50 border border-premium-gold/20 rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold transition-colors"
+                  className={`w-full bg-premium-darkGray/50 border ${formErrors.email ? 'border-red-500' : 'border-premium-gold/30'} rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all`}
                   placeholder="john@example.com"
                 />
+                {formErrors.email && (
+                  <p className="mt-1 text-sm text-red-500">{formErrors.email}</p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
-                  Subject
+                <label htmlFor="subject" className="block text-sm font-semibold text-gray-300 mb-2">
+                  Subject *
                 </label>
                 <input
                   type="text"
@@ -209,51 +272,60 @@ export default function ContactPage() {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  required
-                  className="w-full bg-premium-darkGray/50 border border-premium-gold/20 rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold transition-colors"
+                  className={`w-full bg-premium-darkGray/50 border ${formErrors.subject ? 'border-red-500' : 'border-premium-gold/30'} rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all`}
                   placeholder="What's this about?"
                 />
+                {formErrors.subject && (
+                  <p className="mt-1 text-sm text-red-500">{formErrors.subject}</p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                  Message
+                <label htmlFor="message" className="block text-sm font-semibold text-gray-300 mb-2">
+                  Message *
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  required
                   rows={6}
-                  className="w-full bg-premium-darkGray/50 border border-premium-gold/20 rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold transition-colors resize-none"
+                  className={`w-full bg-premium-darkGray/50 border ${formErrors.message ? 'border-red-500' : 'border-premium-gold/30'} rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all resize-none`}
                   placeholder="Your message here..."
                 />
+                {formErrors.message && (
+                  <p className="mt-1 text-sm text-red-500">{formErrors.message}</p>
+                )}
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full premium-button flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full premium-button flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed py-4 text-lg"
               >
                 {isSubmitting ? (
-                  <span>Sending...</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-5 h-5 border-3 border-premium-black border-t-transparent rounded-full animate-spin"></div>
+                    <span>Sending...</span>
+                  </div>
                 ) : (
                   <>
                     <span>Send Message</span>
-                    <Send size={18} />
+                    <Send size={20} />
                   </>
                 )}
               </button>
 
               {submitStatus === 'success' && (
-                <motion.p
+                <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-green-500 text-center font-medium"
+                  className="p-4 bg-green-500/20 border border-green-500 rounded-lg"
                 >
-                  Message sent successfully! I'll get back to you soon.
-                </motion.p>
+                  <p className="text-green-400 text-center font-semibold">
+                    ✓ Message sent successfully! I'll get back to you soon.
+                  </p>
+                </motion.div>
               )}
             </form>
           </motion.div>
