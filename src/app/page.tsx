@@ -1,70 +1,31 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, Clock, BookOpen, Heart, Sparkles, TrendingUp, Pen } from 'lucide-react'
+import { Calendar, Clock, BookOpen, Heart, Sparkles, Pen, Plus, FileText } from 'lucide-react'
 import { format } from 'date-fns'
 import Link from 'next/link'
-import Image from 'next/image'
-
-// Sample data - replace with your actual data source
-const journalEntries = [
-  {
-    id: 1,
-    title: 'The Beginning of a Journey',
-    content: 'Today marks the start of something beautiful. Words flow like rivers, carrying emotions and stories untold. In every sentence, I find pieces of myself I never knew existed...',
-    date: new Date('2026-01-02'),
-    time: '10:30 AM',
-    category: 'Reflection',
-    readTime: '5 min read',
-    likes: 234,
-  },
-  {
-    id: 2,
-    title: 'Midnight Thoughts',
-    content: 'In the silence of the night, I find clarity. The moon whispers secrets that daylight cannot hear. Each star a story, each shadow a memory waiting to be remembered...',
-    date: new Date('2026-01-01'),
-    time: '11:45 PM',
-    category: 'Poetry',
-    readTime: '3 min read',
-    likes: 189,
-  },
-  {
-    id: 3,
-    title: 'Morning Inspiration',
-    content: 'As dawn breaks, so do new ideas. The golden rays illuminate paths I never knew existed. Today feels different, charged with possibilities and promise...',
-    date: new Date('2025-12-31'),
-    time: '06:15 AM',
-    category: 'Inspiration',
-    readTime: '4 min read',
-    likes: 312,
-  },
-]
-
-const featuredWorks = [
-  {
-    id: 1,
-    title: 'Anthology 38_1',
-    type: 'Anthology',
-    image: '/images/anthologies/anthology-38_1.jpeg',
-    link: '/anthologies',
-  },
-  {
-    id: 2,
-    title: 'The Spiral Between Us - Book1',
-    type: 'Novel',
-    image: '/images/anthologies/anthology-35.jpeg',
-    link: '/novels',
-  },
-  {
-    id: 3,
-    title: 'Anthology 38_2',
-    type: 'Anthology',
-    image: '/images/anthologies/anthology-38_2.jpeg',
-    link: '/anthologies',
-  },
-]
 
 export default function Home() {
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [newEntry, setNewEntry] = useState({ title: '', content: '', category: 'Reflection' })
+  const [entries, setEntries] = useState<any[]>([])
+
+  const handleCreateEntry = () => {
+    if (newEntry.title && newEntry.content) {
+      const entry = {
+        id: Date.now(),
+        ...newEntry,
+        date: new Date(),
+        time: format(new Date(), 'hh:mm a'),
+        likes: 0,
+      }
+      setEntries([entry, ...entries])
+      setNewEntry({ title: '', content: '', category: 'Reflection' })
+      setShowCreateForm(false)
+    }
+  }
+
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
@@ -127,10 +88,10 @@ export default function Home() {
       <section className="px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { label: 'Journal Entries', value: '150+', icon: Pen },
-            { label: 'Poetry Collections', value: '11', icon: BookOpen },
-            { label: 'Published Novels', value: '1', icon: Sparkles },
-            { label: 'Total Readers', value: '10K+', icon: Heart },
+            { label: 'Anthologies', value: '11', icon: BookOpen },
+            { label: 'Published Novel', value: '1', icon: Sparkles },
+            { label: 'Quotes', value: '100+', icon: Heart },
+            { label: 'Readers', value: '10K+', icon: Heart },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -147,141 +108,159 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Works */}
+      {/* Journaling Features */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
+          {/* Create Entry Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-serif font-bold gold-text-gradient mb-4">
-              Featured Works
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Discover our latest and most celebrated creations
-            </p>
-          </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredWorks.map((work, index) => (
-              <motion.div
-                key={work.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 1.4 + index * 0.15 }}
-              >
-                <Link href={work.link}>
-                  <div className="premium-card overflow-hidden group cursor-pointer hover:shadow-gold-glow-lg transition-all duration-500">
-                    <div className="relative h-96 overflow-hidden rounded-lg">
-                      <Image
-                        src={work.image}
-                        alt={work.title}
-                        fill
-                        className="object-contain group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
-                      <div className="absolute bottom-0 left-0 right-0 p-6">
-                        <span className="px-3 py-1 bg-gradient-gold text-premium-black text-xs font-bold rounded-full mb-3 inline-block shadow-lg">
-                          {work.type}
-                        </span>
-                        <h3 className="text-xl font-serif font-bold text-white group-hover:text-premium-lightGold transition-colors">
-                          {work.title}
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Journal Entries */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.8 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-serif font-bold gold-text-gradient mb-4">
-              Recent Entries
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Latest thoughts and musings from my journal
-            </p>
-          </motion.div>
-          <div className="space-y-8">
-            {journalEntries.map((entry, index) => (
-              <motion.article
-                key={entry.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 2.0 + index * 0.15 }}
-                className="premium-card p-8 group hover:shadow-gold-glow-lg transition-all duration-300 relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-premium-gold/5 rounded-full blur-3xl group-hover:bg-premium-gold/10 transition-all duration-500"></div>
-                
-                {/* Header */}
-                <div className="flex flex-wrap items-center gap-4 mb-6 relative z-10">
-                  <span className="px-4 py-2 bg-gradient-gold text-premium-black text-sm font-bold rounded-full shadow-lg">
-                    {entry.category}
-                  </span>
-                  <div className="flex items-center text-gray-400 text-sm space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <Calendar size={16} className="text-premium-gold" />
-                      <span>{format(entry.date, 'MMMM dd, yyyy')}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Clock size={16} className="text-premium-gold" />
-                      <span>{entry.time}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <TrendingUp size={16} className="text-premium-gold" />
-                      <span>{entry.readTime}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4 gold-text-gradient group-hover:scale-[1.02] transition-transform origin-left relative z-10">
-                  {entry.title}
-                </h2>
-                <p className="text-gray-300 text-lg leading-relaxed mb-6 relative z-10">
-                  {entry.content}
-                </p>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-premium-gold/20 relative z-10">
-                  <div className="flex items-center space-x-2 text-gray-400">
-                    <Heart size={20} className="text-premium-gold" />
-                    <span className="font-medium">{entry.likes} likes</span>
-                  </div>
-                  <button className="flex items-center space-x-2 px-6 py-2 bg-premium-gold/10 hover:bg-premium-gold/20 text-premium-gold rounded-lg transition-colors group/btn">
-                    <BookOpen size={18} />
-                    <span className="font-medium">Read Full Entry</span>
-                    <span className="transform group-hover/btn:translate-x-2 transition-transform">→</span>
-                  </button>
-                </div>
-              </motion.article>
-            ))}
-          </div>
-
-          {/* Load More */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 2.6 }}
-            className="text-center mt-12"
-          >
-            <button className="premium-button px-12">
-              Load More Entries
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="premium-button flex items-center space-x-2 mx-auto px-8 py-4 text-lg"
+            >
+              <Plus size={24} />
+              <span>Create New Entry</span>
             </button>
           </motion.div>
+
+          {/* Create Entry Form */}
+          {showCreateForm && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="premium-card p-8 mb-12"
+            >
+              <h3 className="text-2xl font-serif font-bold gold-text-gradient mb-6">Write Your Thoughts</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-2">Title</label>
+                  <input
+                    type="text"
+                    value={newEntry.title}
+                    onChange={(e) => setNewEntry({ ...newEntry, title: e.target.value })}
+                    placeholder="Give your entry a title..."
+                    className="w-full bg-premium-darkGray/50 border border-premium-gold/30 rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-2">Category</label>
+                  <select
+                    value={newEntry.category}
+                    onChange={(e) => setNewEntry({ ...newEntry, category: e.target.value })}
+                    className="w-full bg-premium-darkGray/50 border border-premium-gold/30 rounded-lg px-4 py-3 text-gray-300 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all"
+                  >
+                    <option>Reflection</option>
+                    <option>Poetry</option>
+                    <option>Inspiration</option>
+                    <option>Story</option>
+                    <option>Personal</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-2">Content</label>
+                  <textarea
+                    value={newEntry.content}
+                    onChange={(e) => setNewEntry({ ...newEntry, content: e.target.value })}
+                    placeholder="Pour your heart out..."
+                    rows={6}
+                    className="w-full bg-premium-darkGray/50 border border-premium-gold/30 rounded-lg px-4 py-3 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-premium-gold focus:shadow-gold-glow transition-all resize-none"
+                  />
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    onClick={handleCreateEntry}
+                    className="premium-button flex-1"
+                  >
+                    Save Entry
+                  </button>
+                  <button
+                    onClick={() => setShowCreateForm(false)}
+                    className="flex-1 px-6 py-3 border-2 border-premium-gold/30 text-gray-300 font-semibold rounded-lg hover:bg-premium-gold/10 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Recent Entries Section */}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+              className="flex items-center justify-between mb-8"
+            >
+              <h2 className="text-3xl md:text-4xl font-serif font-bold gold-text-gradient">
+                {entries.length > 0 ? 'Your Entries' : 'Start Your Journey'}
+              </h2>
+              {entries.length > 0 && (
+                <span className="text-gray-400">{entries.length} {entries.length === 1 ? 'entry' : 'entries'}</span>
+              )}
+            </motion.div>
+
+            {entries.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 1.6 }}
+                className="premium-card p-12 text-center"
+              >
+                <FileText className="w-20 h-20 mx-auto text-premium-gold/30 mb-6" />
+                <h3 className="text-2xl font-serif font-bold text-gray-300 mb-4">
+                  No Entries Yet
+                </h3>
+                <p className="text-gray-400 text-lg mb-6">
+                  Start your journaling journey by creating your first entry
+                </p>
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="premium-button"
+                >
+                  Create First Entry
+                </button>
+              </motion.div>
+            ) : (
+              <div className="space-y-6">
+                {entries.map((entry, index) => (
+                  <motion.article
+                    key={entry.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="premium-card p-8 group hover:shadow-gold-glow-lg transition-all duration-300"
+                  >
+                    <div className="flex flex-wrap items-center gap-4 mb-4">
+                      <span className="px-4 py-2 bg-gradient-gold text-premium-black text-sm font-bold rounded-full shadow-lg">
+                        {entry.category}
+                      </span>
+                      <div className="flex items-center text-gray-400 text-sm space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <Calendar size={16} className="text-premium-gold" />
+                          <span>{format(entry.date, 'MMMM dd, yyyy')}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Clock size={16} className="text-premium-gold" />
+                          <span>{entry.time}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4 gold-text-gradient">
+                      {entry.title}
+                    </h2>
+                    <p className="text-gray-300 text-lg leading-relaxed whitespace-pre-wrap">
+                      {entry.content}
+                    </p>
+                  </motion.article>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

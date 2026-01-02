@@ -169,8 +169,8 @@ export default function AnthologiesPage() {
           {[
             { label: 'Anthologies', value: '11', icon: BookOpen },
             { label: 'Total Poems', value: '850+', icon: Heart },
-            { label: 'Pages', value: '2,600+', icon: Calendar },
             { label: 'Avg Rating', value: '4.8', icon: Star },
+            { label: 'Published', value: '2024-25', icon: Calendar },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -211,9 +211,8 @@ export default function AnthologiesPage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <div className="flex items-center justify-between text-white/80 text-sm mb-2">
+                      <div className="flex items-center justify-center text-white/80 text-sm mb-2">
                         <span>{anthology.poems} Poems</span>
-                        <span>{anthology.pages} Pages</span>
                       </div>
                     </div>
                   </div>

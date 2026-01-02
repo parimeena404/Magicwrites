@@ -59,8 +59,8 @@ export default function NovelsPage() {
           {[
             { label: 'Published Novels', value: '1', icon: BookOpen },
             { label: 'Average Rating', value: '4.9', icon: Star },
-            { label: 'Total Pages', value: '350+', icon: Clock },
             { label: 'Reviews', value: '150+', icon: Award },
+            { label: 'Year', value: '2025', icon: Clock },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
