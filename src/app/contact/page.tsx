@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, MapPin, Send, Instagram } from 'lucide-react'
 import Image from 'next/image'
+import AuthorBio from '@/components/AuthorBio'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -109,10 +110,13 @@ export default function ContactPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto"
           >
-            Let's connect and create something magical together
+            Want to chat? Drop me a message!
           </motion.p>
         </div>
       </section>
+
+      {/* Author Bio */}
+      <AuthorBio />
 
       {/* Contact Section */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">

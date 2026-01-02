@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import { BookOpen, Calendar, Heart, Sparkles, Star } from 'lucide-react'
 import Image from 'next/image'
-import AuthorBio from '@/components/AuthorBio'
 
 // Anthologies data with actual images
 const anthologies = [
@@ -137,13 +136,10 @@ export default function AnthologiesPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto"
           >
-            Collections of verses that touch the soul and illuminate the human experience
+            Here are my poetry collections - each one tells a different story
           </motion.p>
         </div>
       </section>
-
-      {/* Author Bio */}
-      <AuthorBio />
 
       {/* Anthologies Grid */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">

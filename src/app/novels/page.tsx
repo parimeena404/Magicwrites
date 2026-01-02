@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import { BookOpen, Star, Clock, Award } from 'lucide-react'
 import Image from 'next/image'
-import AuthorBio from '@/components/AuthorBio'
 
 // Sample novels data
 const novels = [
@@ -47,13 +46,10 @@ export default function NovelsPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto"
           >
-            Immersive stories that transport you to different worlds and touch your soul
+            My first novel - a story about love, connection, and finding yourself
           </motion.p>
         </div>
       </section>
-
-      {/* Author Bio */}
-      <AuthorBio />
 
       {/* Novels Grid */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">

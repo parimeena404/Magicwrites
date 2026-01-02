@@ -22,7 +22,13 @@ interface Comment {
 }
 
 export default function QuotesPage() {
-  const [quotes, setQuotes] = useState<Quote[]>([])
+  const [quotes, setQuotes] = useState<Quote[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('magicwrites-quotes')
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  })
   const [isAuthor] = useState(true) // Set to true for author access
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newQuote, setNewQuote] = useState({ text: '', author: 'Magicwrites' })
@@ -30,17 +36,25 @@ export default function QuotesPage() {
   const [expandedQuote, setExpandedQuote] = useState<number | null>(null)
   const [newComment, setNewComment] = useState<{ [key: number]: string }>({})
 
+  // Save quotes to localStorage whenever they change
+  const saveQuotes = (updatedQuotes: Quote[]) => {
+    setQuotes(updatedQuotes)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('magicwrites-quotes', JSON.stringify(updatedQuotes))
+    }
+  }
+
   const handleCreateQuote = () => {
     if (newQuote.text.trim()) {
       const quote: Quote = {
         id: Date.now(),
         ...newQuote,
-        date: 'Just now',
+        date: new Date().toLocaleString(),
         likes: 0,
         comments: [],
         isLiked: false,
       }
-      setQuotes([quote, ...quotes])
+      saveQuotes([quote, ...quotes])
       setNewQuote({ text: '', author: 'Magicwrites' })
       setShowCreateForm(false)
     }
@@ -57,11 +71,12 @@ export default function QuotesPage() {
 
   const handleUpdateQuote = () => {
     if (editingQuote && newQuote.text.trim()) {
-      setQuotes(quotes.map(quote =>
+      const updatedQuotes = quotes.map(quote =>
         quote.id === editingQuote
           ? { ...quote, text: newQuote.text, author: newQuote.author }
           : quote
-      ))
+      )
+      saveQuotes(updatedQuotes)
       setNewQuote({ text: '', author: 'Magicwrites' })
       setEditingQuote(null)
       setShowCreateForm(false)
@@ -70,12 +85,12 @@ export default function QuotesPage() {
 
   const handleDeleteQuote = (id: number) => {
     if (confirm('Are you sure you want to delete this quote?')) {
-      setQuotes(quotes.filter(quote => quote.id !== id))
+      saveQuotes(quotes.filter(quote => quote.id !== id))
     }
   }
 
   const handleLike = (quoteId: number) => {
-    setQuotes(quotes.map(quote =>
+    const updatedQuotes = quotes.map(quote =>
       quote.id === quoteId
         ? {
           ...quote,
@@ -83,7 +98,8 @@ export default function QuotesPage() {
           likes: quote.isLiked ? quote.likes - 1 : quote.likes + 1
         }
         : quote
-    ))
+    )
+    saveQuotes(updatedQuotes)
   }
 
   const handleShare = async (quote: Quote) => {
@@ -106,7 +122,7 @@ export default function QuotesPage() {
   const handleAddComment = (quoteId: number) => {
     const commentText = newComment[quoteId]?.trim()
     if (commentText) {
-      setQuotes(quotes.map(quote =>
+      const updatedQuotes = quotes.map(quote =>
         quote.id === quoteId
           ? {
             ...quote,
@@ -116,12 +132,13 @@ export default function QuotesPage() {
                 id: Date.now(),
                 author: isAuthor ? 'Magicwrites' : 'Reader',
                 text: commentText,
-                date: 'Just now'
+                date: new Date().toLocaleString()
               }
             ]
           }
           : quote
-      ))
+      )
+      saveQuotes(updatedQuotes)
       setNewComment({ ...newComment, [quoteId]: '' })
     }
   }
@@ -154,7 +171,7 @@ export default function QuotesPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto"
           >
-            {isAuthor ? 'Share your wisdom with the world' : 'Words that inspire and transform'}
+            {isAuthor ? 'Quick thoughts and quotes I want to share' : 'Words to think about'}
           </motion.p>
         </div>
       </section>

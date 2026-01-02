@@ -55,9 +55,8 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-10"
           >
-            A collection of thoughts, stories, poetry, and moments captured in time.
-            <br />
-            Discover the magic in every word.
+            Welcome to my little corner of the internet where I share my thoughts, 
+            stories, and whatever's on my mind. Feel free to browse around!
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -77,30 +76,6 @@ export default function Home() {
               </button>
             </Link>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { label: 'Anthologies', value: '11', icon: BookOpen },
-            { label: 'Published Novel', value: '1', icon: Sparkles },
-            { label: 'Quotes', value: '100+', icon: Heart },
-            { label: 'Readers', value: '10K+', icon: Heart },
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-              className="premium-card p-6 text-center hover:scale-105 transition-all duration-300 cursor-pointer group"
-            >
-              <stat.icon className="w-10 h-10 mx-auto text-premium-gold mb-3 group-hover:animate-bounce" />
-              <div className="text-3xl font-bold gold-text-gradient mb-2">{stat.value}</div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
-            </motion.div>
-          ))}
         </div>
       </section>
 

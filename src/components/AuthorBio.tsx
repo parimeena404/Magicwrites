@@ -37,9 +37,10 @@ export default function AuthorBio() {
             </div>
 
             <p className="text-gray-300 text-lg leading-relaxed">
-              A passionate writer crafting stories that resonate with the soul. Through poetry and prose, 
-              I explore the depths of human emotion, connection, and the beauty found in everyday moments. 
-              With 11 published anthologies and a novel, my words aim to inspire, heal, and transform.
+              Hey there! I'm a poet and writer who loves playing with words and emotions. 
+              Writing has always been my way of making sense of the world - every poem, every story 
+              is a little piece of my heart. Through my anthologies and novel, I've tried to capture 
+              the everyday magic we often miss. Thanks for stopping by and reading my work!
             </p>
 
             {/* Stats */}
