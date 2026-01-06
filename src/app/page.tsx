@@ -1,447 +1,396 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, MessageCircle, Bookmark, Send, MoreHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react'
-import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Heart, MessageCircle, Bookmark, Sparkles, TrendingUp, Users, Feather, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatDate } from '@/lib/utils'
 
-interface Story {
+interface Writing {
   id: string
+  title: string
+  excerpt: string
+  content: string
+  slug: string
+  genre: string | null
+  mood: string | null
+  createdAt: string
   author: {
+    id: string
     name: string
     username: string
-    avatar: string
     isFounder: boolean
   }
-  image: string
-  timestamp: string
-  viewed: boolean
-}
-
-interface Post {
-  id: string
-  author: {
-    name: string
-    username: string
-    avatar: string
-    isFounder: boolean
+  _count: {
+    likes: number
+    reflections: number
+    reposts: number
   }
-  image?: string
-  caption: string
-  likes: number
-  comments: number
-  timestamp: string
-  saved: boolean
-  liked: boolean
 }
 
 export default function HomePage() {
   const { user } = useAuth()
-  const [selectedStory, setSelectedStory] = useState<Story | null>(null)
-  const [storyIndex, setStoryIndex] = useState(0)
-  const [posts, setPosts] = useState<Post[]>([])
-  const [stories, setStories] = useState<Story[]>([])
-
-  // Sample stories data
-  const sampleStories: Story[] = [
-    {
-      id: '1',
-      author: {
-        name: 'Pari Meena',
-        username: 'parimeena',
-        avatar: '/api/placeholder/100/100',
-        isFounder: true
-      },
-      image: '/images/anthologies/Drums of Dawn.jpeg',
-      timestamp: '2h ago',
-      viewed: false
-    },
-    {
-      id: '2',
-      author: {
-        name: 'Sarah Writer',
-        username: 'sarahwrites',
-        avatar: '/api/placeholder/100/100',
-        isFounder: false
-      },
-      image: '/images/anthologies/Petals 6th edition.jpeg',
-      timestamp: '5h ago',
-      viewed: false
-    },
-    {
-      id: '3',
-      author: {
-        name: 'Alex Poet',
-        username: 'alexpoet',
-        avatar: '/api/placeholder/100/100',
-        isFounder: false
-      },
-      image: '/images/anthologies/Where darkness meets dawn.jpeg',
-      timestamp: '8h ago',
-      viewed: false
-    }
-  ]
-
-  // Sample posts data
-  const samplePosts: Post[] = [
-    {
-      id: '1',
-      author: {
-        name: 'Pari Meena',
-        username: 'parimeena',
-        avatar: '/api/placeholder/100/100',
-        isFounder: true
-      },
-      image: '/images/anthologies/Drums of Dawn.jpeg',
-      caption: 'Just published my latest anthology "Drums of Dawn" 🌅 A rhythmic collection of verses that awaken the soul. What do you think about writing at dawn? #Poetry #WritingCommunity',
-      likes: 234,
-      comments: 45,
-      timestamp: new Date().toISOString(),
-      saved: false,
-      liked: false
-    },
-    {
-      id: '2',
-      author: {
-        name: 'Emma Stories',
-        username: 'emmastories',
-        avatar: '/api/placeholder/100/100',
-        isFounder: false
-      },
-      caption: 'Working on my novel tonight. Sometimes the words flow like magic, sometimes they hide. But the journey is always worth it. ✨ Who else is writing tonight? #AmWriting #WritersLife',
-      likes: 156,
-      comments: 23,
-      timestamp: new Date(Date.now() - 3600000).toISOString(),
-      saved: false,
-      liked: false
-    },
-    {
-      id: '3',
-      author: {
-        name: 'Pari Meena',
-        username: 'parimeena',
-        avatar: '/api/placeholder/100/100',
-        isFounder: true
-      },
-      image: '/images/novels/the-spiral-between-us.png',
-      caption: 'Excited to announce "The Spiral Between Us" is now available! 📖 A journey through love and connection. Link in bio! #NewNovel #BookRelease',
-      likes: 389,
-      comments: 67,
-      timestamp: new Date(Date.now() - 7200000).toISOString(),
-      saved: false,
-      liked: false
-    }
-  ]
+  const [writings, setWritings] = useState<Writing[]>([])
+  const [featuredWriting, setFeaturedWriting] = useState<Writing | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
+  const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    setStories(sampleStories)
-    setPosts(samplePosts)
+    fetchWritings()
   }, [])
 
-  const handleLike = (postId: string) => {
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 }
-        : post
-    ))
-  }
-
-  const handleSave = (postId: string) => {
-    setPosts(posts.map(post => 
-      post.id === postId 
-        ? { ...post, saved: !post.saved }
-        : post
-    ))
-  }
-
-  const viewStory = (story: Story, index: number) => {
-    setSelectedStory(story)
-    setStoryIndex(index)
-    setStories(stories.map(s => s.id === story.id ? { ...s, viewed: true } : s))
-  }
-
-  const nextStory = () => {
-    if (storyIndex < stories.length - 1) {
-      setStoryIndex(storyIndex + 1)
-      setSelectedStory(stories[storyIndex + 1])
-      setStories(stories.map((s, i) => i === storyIndex + 1 ? { ...s, viewed: true } : s))
-    } else {
-      setSelectedStory(null)
+  const fetchWritings = async () => {
+    try {
+      const res = await fetch('/api/writings?limit=20')
+      const data = await res.json()
+      if (data.writings && data.writings.length > 0) {
+        setFeaturedWriting(data.writings[0])
+        setWritings(data.writings.slice(1))
+      }
+    } catch (error) {
+      console.error('Failed to fetch writings:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const previousStory = () => {
-    if (storyIndex > 0) {
-      setStoryIndex(storyIndex - 1)
-      setSelectedStory(stories[storyIndex - 1])
+  const handleLike = async (writingId: string) => {
+    if (!user) return
+    
+    try {
+      const res = await fetch(`/api/writings/${writingId}/like`, { method: 'POST' })
+      if (res.ok) {
+        const data = await res.json()
+        if (data.liked) {
+          setLikedPosts(new Set([...likedPosts, writingId]))
+        } else {
+          const newLiked = new Set(likedPosts)
+          newLiked.delete(writingId)
+          setLikedPosts(newLiked)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to like:', error)
+    }
+  }
+
+  const handleSave = (writingId: string) => {
+    if (savedPosts.has(writingId)) {
+      const newSaved = new Set(savedPosts)
+      newSaved.delete(writingId)
+      setSavedPosts(newSaved)
+    } else {
+      setSavedPosts(new Set([...savedPosts, writingId]))
     }
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-10 bg-neutral-950">
-      <div className="max-w-2xl mx-auto px-4">
-        {/* Stories Section */}
-        <div className="mb-8 overflow-x-auto scrollbar-hide">
-          <div className="flex space-x-4 py-4">
-            {/* Your Story */}
-            {user && (
-              <div className="flex flex-col items-center space-y-1 flex-shrink-0">
-                <div className="relative cursor-pointer group">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 via-pink-600 to-orange-500 p-0.5">
-                    <div className="w-full h-full rounded-full bg-neutral-900 p-1">
-                      <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FFED4E] to-yellow-600 flex items-center justify-center text-black font-bold text-xl">
-                        {user.name[0].toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="absolute bottom-0 right-0 w-6 h-6 bg-blue-500 rounded-full border-2 border-neutral-900 flex items-center justify-center text-white text-xs font-bold">
-                    +
-                  </div>
-                </div>
-                <span className="text-xs text-neutral-400 max-w-[80px] truncate">Your Story</span>
-              </div>
-            )}
-
-            {/* Other Stories */}
-            {stories.map((story, index) => (
-              <div key={story.id} className="flex flex-col items-center space-y-1 flex-shrink-0">
-                <button
-                  onClick={() => viewStory(story, index)}
-                  className="relative cursor-pointer group"
-                >
-                  <div className={`w-20 h-20 rounded-full p-0.5 ${
-                    story.viewed 
-                      ? 'bg-neutral-700' 
-                      : 'bg-gradient-to-tr from-purple-600 via-pink-600 to-orange-500'
-                  }`}>
-                    <div className="w-full h-full rounded-full bg-neutral-900 p-1">
-                      <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FFED4E] to-yellow-600 flex items-center justify-center text-black font-bold text-xl overflow-hidden">
-                        {story.author.name[0].toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
-                  {story.author.isFounder && (
-                    <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#FFED4E] rounded-full border-2 border-neutral-900 flex items-center justify-center text-black text-xs font-bold">
-                      ★
-                    </div>
-                  )}
-                </button>
-                <span className="text-xs text-neutral-400 max-w-[80px] truncate">
-                  {story.author.username}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Posts Feed */}
-        <div className="space-y-6">
-          {posts.map((post, index) => (
-            <motion.article
-              key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-neutral-900 rounded-lg border border-neutral-800 overflow-hidden"
-            >
-              {/* Post Header */}
-              <div className="flex items-center justify-between p-4">
-                <Link href={`/writers/${post.author.username}`} className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FFED4E] to-yellow-600 flex items-center justify-center text-black font-bold">
-                    {post.author.name[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-white hover:text-neutral-300">
-                        {post.author.username}
-                      </span>
-                      {post.author.isFounder && (
-                        <span className="px-2 py-0.5 bg-[#FFED4E] text-black text-xs font-bold rounded">
-                          FOUNDER
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-xs text-neutral-400">{formatDate(post.timestamp)}</span>
-                  </div>
-                </Link>
-                <button className="text-neutral-400 hover:text-white">
-                  <MoreHorizontal size={20} />
-                </button>
-              </div>
-
-              {/* Post Image */}
-              {post.image && (
-                <div className="relative w-full aspect-square bg-neutral-800">
-                  <Image
-                    src={post.image}
-                    alt="Post"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
-
-              {/* Post Actions */}
-              <div className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <button
-                      onClick={() => handleLike(post.id)}
-                      className="hover:scale-110 transition-transform"
-                    >
-                      <Heart
-                        size={24}
-                        className={post.liked ? 'fill-red-500 text-red-500' : 'text-white'}
-                      />
-                    </button>
-                    <button className="hover:scale-110 transition-transform">
-                      <MessageCircle size={24} className="text-white" />
-                    </button>
-                    <button className="hover:scale-110 transition-transform">
-                      <Send size={24} className="text-white" />
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => handleSave(post.id)}
-                    className="hover:scale-110 transition-transform"
-                  >
-                    <Bookmark
-                      size={24}
-                      className={post.saved ? 'fill-[#FFED4E] text-[#FFED4E]' : 'text-white'}
-                    />
-                  </button>
-                </div>
-
-                {/* Likes */}
-                <div className="font-semibold text-white">
-                  {post.likes.toLocaleString()} likes
-                </div>
-
-                {/* Caption */}
-                <div className="text-white">
-                  <Link href={`/writers/${post.author.username}`} className="font-semibold hover:text-neutral-300">
-                    {post.author.username}
-                  </Link>
-                  {' '}
-                  <span className="text-neutral-300">{post.caption}</span>
-                </div>
-
-                {/* Comments */}
-                {post.comments > 0 && (
-                  <button className="text-neutral-400 hover:text-neutral-300 text-sm">
-                    View all {post.comments} comments
-                  </button>
-                )}
-              </div>
-            </motion.article>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {posts.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-neutral-400 text-lg mb-4">No posts yet</p>
-            <Link
-              href="/write"
-              className="inline-block px-6 py-3 bg-[#FFED4E] text-black font-semibold rounded-lg hover:bg-[#FFE830] transition-colors"
-            >
-              Create Your First Post
-            </Link>
-          </div>
-        )}
-      </div>
-
-      {/* Story Viewer Modal */}
-      <AnimatePresence>
-        {selectedStory && (
+    <div className="min-h-screen pt-20 pb-16 bg-gradient-to-b from-neutral-950 via-neutral-900 to-neutral-950">
+      {/* Hero Section */}
+      <section className="relative px-4 sm:px-6 lg:px-8 py-16 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-radial from-[#FFED4E]/5 via-transparent to-transparent opacity-50" />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black z-50 flex items-center justify-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
           >
-            {/* Story Progress Bars */}
-            <div className="absolute top-4 left-0 right-0 px-4 z-10">
-              <div className="flex space-x-1 max-w-2xl mx-auto">
-                {stories.map((_, index) => (
-                  <div key={index} className="flex-1 h-0.5 bg-neutral-700 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full bg-white transition-all duration-300 ${
-                        index < storyIndex ? 'w-full' : index === storyIndex ? 'w-full' : 'w-0'
-                      }`}
-                    />
-                  </div>
-                ))}
+            <div className="inline-flex items-center space-x-2 mb-6 px-4 py-2 bg-[#FFED4E]/10 border border-[#FFED4E]/30 rounded-full">
+              <Sparkles className="w-4 h-4 text-[#FFED4E]" />
+              <span className="text-[#FFED4E] text-sm font-medium">A Sanctuary for Writers</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 bg-gradient-to-r from-white via-[#FFED4E] to-white bg-clip-text text-transparent">
+              Where Words Find Their Voice
+            </h1>
+            
+            <p className="text-xl text-neutral-400 max-w-2xl mx-auto mb-8">
+              Join a judgment-free community of writers sharing their stories, poetry, and thoughts
+            </p>
+
+            {!user && (
+              <div className="flex items-center justify-center space-x-4 flex-wrap gap-2">
+                <Link href="/write" className="px-8 py-4 bg-[#FFED4E] text-black font-bold rounded-xl hover:bg-[#FFE830] transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-[#FFED4E]/20">
+                  <Feather size={20} />
+                  <span>Start Writing</span>
+                </Link>
+                <Link href="/community" className="px-8 py-4 bg-neutral-800 text-white font-semibold rounded-xl hover:bg-neutral-700 transition-all duration-300 border border-neutral-700">
+                  Explore Community
+                </Link>
               </div>
-            </div>
-
-            {/* Story Header */}
-            <div className="absolute top-8 left-0 right-0 px-4 z-10">
-              <div className="flex items-center justify-between max-w-2xl mx-auto">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FFED4E] to-yellow-600 flex items-center justify-center text-black font-bold">
-                    {selectedStory.author.name[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-white">{selectedStory.author.username}</span>
-                      {selectedStory.author.isFounder && (
-                        <span className="px-2 py-0.5 bg-[#FFED4E] text-black text-xs font-bold rounded">
-                          FOUNDER
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-xs text-neutral-300">{selectedStory.timestamp}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setSelectedStory(null)}
-                  className="text-white hover:text-neutral-300"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-            </div>
-
-            {/* Story Image */}
-            <div className="relative w-full max-w-2xl h-full">
-              <Image
-                src={selectedStory.image}
-                alt="Story"
-                fill
-                className="object-contain"
-              />
-            </div>
-
-            {/* Navigation Arrows */}
-            {storyIndex > 0 && (
-              <button
-                onClick={previousStory}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-neutral-800/50 hover:bg-neutral-700/50 rounded-full flex items-center justify-center text-white"
-              >
-                <ChevronLeft size={24} />
-              </button>
             )}
-            {storyIndex < stories.length - 1 && (
-              <button
-                onClick={nextStory}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-neutral-800/50 hover:bg-neutral-700/50 rounded-full flex items-center justify-center text-white"
-              >
-                <ChevronRight size={24} />
-              </button>
-            )}
+          </motion.div>
 
-            {/* Click Areas */}
-            <div className="absolute inset-0 flex">
-              <div className="flex-1 cursor-pointer" onClick={previousStory} />
-              <div className="flex-1 cursor-pointer" onClick={nextStory} />
+          {/* Quick Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto"
+          >
+            <div className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 rounded-2xl p-6 text-center">
+              <Users className="w-8 h-8 text-[#FFED4E] mx-auto mb-3" />
+              <div className="text-3xl font-bold text-white mb-1">Writers</div>
+              <div className="text-neutral-400 text-sm">Creative Community</div>
+            </div>
+            
+            <div className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 rounded-2xl p-6 text-center">
+              <Feather className="w-8 h-8 text-[#FFED4E] mx-auto mb-3" />
+              <div className="text-3xl font-bold text-white mb-1">{loading ? '...' : writings.length + (featuredWriting ? 1 : 0)}</div>
+              <div className="text-neutral-400 text-sm">Published Works</div>
+            </div>
+            
+            <div className="bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 rounded-2xl p-6 text-center">
+              <TrendingUp className="w-8 h-8 text-[#FFED4E] mx-auto mb-3" />
+              <div className="text-3xl font-bold text-white mb-1">Growing</div>
+              <div className="text-neutral-400 text-sm">Active Readers</div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      </section>
+
+      {/* Featured Writing */}
+      {featuredWriting && (
+        <section className="px-4 sm:px-6 lg:px-8 mb-16">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="mb-6 flex items-center justify-between"
+            >
+              <h2 className="text-2xl font-serif font-bold text-[#FFED4E] flex items-center space-x-2">
+                <Sparkles className="w-6 h-6" />
+                <span>Featured Story</span>
+              </h2>
+            </motion.div>
+
+            <motion.article
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="relative bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-3xl overflow-hidden border border-[#FFED4E]/20 shadow-2xl shadow-[#FFED4E]/10 hover:shadow-[#FFED4E]/20 transition-all duration-500"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFED4E]/5 to-transparent opacity-50" />
+              
+              <div className="relative p-8 md:p-12">
+                {/* Author Info */}
+                <Link href={`/writers/${featuredWriting.author.username}`} className="flex items-center space-x-4 mb-6">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FFED4E] to-yellow-600 flex items-center justify-center text-black font-bold text-2xl">
+                    {featuredWriting.author.name[0].toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-semibold text-white">{featuredWriting.author.name}</span>
+                      {featuredWriting.author.isFounder && (
+                        <span className="px-3 py-1 bg-[#FFED4E] text-black text-xs font-bold rounded-full">
+                          FOUNDER
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-neutral-400 text-sm">@{featuredWriting.author.username}</span>
+                  </div>
+                </Link>
+
+                {/* Content */}
+                <Link href={`/writings/${featuredWriting.slug}`}>
+                  <h3 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4 hover:text-[#FFED4E] transition-colors">
+                    {featuredWriting.title}
+                  </h3>
+                  <p className="text-xl text-neutral-300 leading-relaxed mb-6 line-clamp-3">
+                    {featuredWriting.excerpt}
+                  </p>
+                </Link>
+
+                {/* Tags & Actions */}
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center space-x-3">
+                    {featuredWriting.genre && (
+                      <span className="px-4 py-2 bg-neutral-800 text-[#FFED4E] text-sm font-medium rounded-full border border-[#FFED4E]/30">
+                        {featuredWriting.genre}
+                      </span>
+                    )}
+                    {featuredWriting.mood && (
+                      <span className="px-4 py-2 bg-neutral-800 text-neutral-300 text-sm rounded-full border border-neutral-700">
+                        {featuredWriting.mood}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-6 text-neutral-400">
+                    <button
+                      onClick={() => handleLike(featuredWriting.id)}
+                      disabled={!user}
+                      className="flex items-center space-x-2 hover:text-red-400 transition-colors disabled:opacity-50"
+                    >
+                      <Heart size={20} fill={likedPosts.has(featuredWriting.id) ? 'currentColor' : 'none'} className={likedPosts.has(featuredWriting.id) ? 'text-red-400' : ''} />
+                      <span>{featuredWriting._count.likes}</span>
+                    </button>
+                    
+                    <Link href={`/writings/${featuredWriting.slug}#reflections`} className="flex items-center space-x-2 hover:text-[#FFED4E] transition-colors">
+                      <MessageCircle size={20} />
+                      <span>{featuredWriting._count.reflections}</span>
+                    </Link>
+                    
+                    <button
+                      onClick={() => handleSave(featuredWriting.id)}
+                      className="flex items-center space-x-2 hover:text-[#FFED4E] transition-colors"
+                    >
+                      <Bookmark size={20} fill={savedPosts.has(featuredWriting.id) ? 'currentColor' : 'none'} className={savedPosts.has(featuredWriting.id) ? 'text-[#FFED4E]' : ''} />
+                    </button>
+
+                    <Link href={`/writings/${featuredWriting.slug}`} className="flex items-center space-x-2 text-[#FFED4E] hover:text-[#FFE830] transition-colors font-medium">
+                      <span>Read More</span>
+                      <ChevronRight size={20} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </motion.article>
+          </div>
+        </section>
+      )}
+
+      {/* Recent Writings Grid */}
+      <section className="px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-2xl font-serif font-bold text-white">Latest from the Community</h2>
+            <Link href="/community" className="text-[#FFED4E] hover:text-[#FFE830] flex items-center space-x-2 font-medium">
+              <span>View All</span>
+              <ChevronRight size={20} />
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFED4E]"></div>
+            </div>
+          ) : writings.length === 0 && !featuredWriting ? (
+            <div className="text-center py-20 bg-neutral-900 rounded-2xl border border-neutral-800">
+              <Feather className="w-16 h-16 text-neutral-600 mx-auto mb-4" />
+              <p className="text-neutral-400 text-lg mb-6">No writings yet. Be the first to share!</p>
+              {user && (
+                <Link href="/write" className="inline-flex items-center space-x-2 px-6 py-3 bg-[#FFED4E] text-black font-semibold rounded-xl hover:bg-[#FFE830] transition-colors">
+                  <Feather size={20} />
+                  <span>Write Something</span>
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {writings.map((writing, index) => (
+                <motion.article
+                  key={writing.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  className="bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-800 hover:border-[#FFED4E]/30 transition-all duration-300 hover:shadow-lg hover:shadow-[#FFED4E]/10"
+                >
+                  {/* Author */}
+                  <div className="p-4 border-b border-neutral-800">
+                    <Link href={`/writers/${writing.author.username}`} className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FFED4E] to-yellow-600 flex items-center justify-center text-black font-bold">
+                        {writing.author.name[0].toUpperCase()}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-white text-sm">{writing.author.name}</span>
+                          {writing.author.isFounder && (
+                            <span className="px-2 py-0.5 bg-[#FFED4E] text-black text-xs font-bold rounded">F</span>
+                          )}
+                        </div>
+                        <span className="text-xs text-neutral-400">{formatDate(writing.createdAt)}</span>
+                      </div>
+                    </Link>
+                  </div>
+
+                  {/* Content */}
+                  <Link href={`/writings/${writing.slug}`} className="block p-6">
+                    <h3 className="text-xl font-serif font-bold text-white mb-3 hover:text-[#FFED4E] transition-colors line-clamp-2">
+                      {writing.title}
+                    </h3>
+                    <p className="text-neutral-400 text-sm leading-relaxed line-clamp-3 mb-4">
+                      {writing.excerpt}
+                    </p>
+                    
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {writing.genre && (
+                        <span className="px-3 py-1 bg-neutral-800 text-neutral-300 text-xs rounded-full">
+                          {writing.genre}
+                        </span>
+                      )}
+                      {writing.mood && (
+                        <span className="px-3 py-1 bg-neutral-800 text-neutral-300 text-xs rounded-full">
+                          {writing.mood}
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+
+                  {/* Actions */}
+                  <div className="px-6 pb-4 flex items-center justify-between text-neutral-400 text-sm">
+                    <button
+                      onClick={() => handleLike(writing.id)}
+                      disabled={!user}
+                      className="flex items-center space-x-1 hover:text-red-400 transition-colors disabled:opacity-50"
+                    >
+                      <Heart size={16} fill={likedPosts.has(writing.id) ? 'currentColor' : 'none'} className={likedPosts.has(writing.id) ? 'text-red-400' : ''} />
+                      <span>{writing._count.likes}</span>
+                    </button>
+                    
+                    <Link href={`/writings/${writing.slug}#reflections`} className="flex items-center space-x-1 hover:text-[#FFED4E] transition-colors">
+                      <MessageCircle size={16} />
+                      <span>{writing._count.reflections}</span>
+                    </Link>
+                    
+                    <button
+                      onClick={() => handleSave(writing.id)}
+                      className="hover:text-[#FFED4E] transition-colors"
+                    >
+                      <Bookmark size={16} fill={savedPosts.has(writing.id) ? 'currentColor' : 'none'} className={savedPosts.has(writing.id) ? 'text-[#FFED4E]' : ''} />
+                    </button>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      {!user && (
+        <section className="px-4 sm:px-6 lg:px-8 mt-20">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative bg-gradient-to-br from-[#FFED4E]/10 to-neutral-900 rounded-3xl p-12 text-center border border-[#FFED4E]/20 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+              <div className="relative z-10">
+                <Sparkles className="w-12 h-12 text-[#FFED4E] mx-auto mb-6" />
+                <h3 className="text-3xl font-serif font-bold text-white mb-4">
+                  Ready to Share Your Story?
+                </h3>
+                <p className="text-neutral-300 text-lg mb-8 max-w-2xl mx-auto">
+                  Join our community of writers. No judgment, no metrics, just pure creative expression.
+                </p>
+                <Link href="/write" className="inline-flex items-center space-x-2 px-8 py-4 bg-[#FFED4E] text-black font-bold rounded-xl hover:bg-[#FFE830] transition-all duration-300 shadow-lg shadow-[#FFED4E]/20">
+                  <Feather size={20} />
+                  <span>Start Writing Now</span>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
     </div>
   )
 }
