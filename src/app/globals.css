@@ -27,8 +27,14 @@
     @apply bg-gradient-to-r from-premium-darkGold via-premium-gold to-premium-lightGold bg-clip-text text-transparent;
   }
   
+  .gold-bubble {
+    @apply absolute rounded-full bg-gradient-radial from-premium-gold/30 via-premium-gold/20 to-transparent;
+    backdrop-filter: blur(2px);
+    box-shadow: inset 0 0 20px rgba(255, 237, 78, 0.3), 0 0 30px rgba(255, 237, 78, 0.2);
+  }
+  
   .gold-border-gradient {
-    border-image: linear-gradient(135deg, #B8860B, #D4AF37, #FFD700) 1;
+    border-image: linear-gradient(135deg, #A88B3E, #C9A961, #E3C88D) 1;
   }
   
   .premium-card {
