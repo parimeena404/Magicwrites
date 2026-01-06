@@ -1,0 +1,100 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  username      String    @unique
+  bio           String?
+  profileImage  String?
+  isFounder     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  writings      Writing[]
+  reflections   Reflection[]
+  likes         Like[]
+  reposts       Repost[]
+}
+
+model Writing {
+  id            String    @id @default(cuid())
+  title         String
+  content       String
+  excerpt       String?
+  slug          String    @unique
+  genre         String?
+  mood          String?
+  isPublished   Boolean   @default(true)
+  isFeatured    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  reflections   Reflection[]
+  likes         Like[]
+  reposts       Repost[]
+  
+  @@index([authorId])
+  @@index([slug])
+  @@index([genre])
+  @@index([mood])
+}
+
+model Reflection {
+  id            String    @id @default(cuid())
+  content       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  writingId     String
+  writing       Writing   @relation(fields: [writingId], references: [id], onDelete: Cascade)
+  
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  @@index([writingId])
+  @@index([authorId])
+}
+
+model Like {
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  
+  writingId     String
+  writing       Writing   @relation(fields: [writingId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([writingId, userId])
+  @@index([writingId])
+  @@index([userId])
+}
+
+model Repost {
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  
+  writingId     String
+  writing       Writing   @relation(fields: [writingId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([writingId, userId])
+  @@index([writingId])
+  @@index([userId])
+}

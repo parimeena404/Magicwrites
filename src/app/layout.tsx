@@ -4,6 +4,7 @@ import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import BubbleBackground from '@/components/BubbleBackground'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 const playfair = Playfair_Display({ 
   subsets: ['latin'],
@@ -30,18 +31,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body className="font-sans antialiased">
-        <div className="min-h-screen flex flex-col bg-premium-black">
-          {/* Animated Bubble Background */}
-          <BubbleBackground />
-          
-          <Navigation />
-          
-          <main className="flex-1 relative z-10">
-            {children}
-          </main>
-          
-          <Footer />
-        </div>
+        <AuthProvider>
+          <div className="min-h-screen flex flex-col bg-premium-black">
+            {/* Animated Bubble Background */}
+            <BubbleBackground />
+            
+            <Navigation />
+            
+            <main className="flex-1 relative z-10">
+              {children}
+            </main>
+            
+            <Footer />
+          </div>
+        </AuthProvider>
       </body>
     </html>
   )

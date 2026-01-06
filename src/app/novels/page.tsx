@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { BookOpen, Star, Clock, Award } from 'lucide-react'
+import { BookOpen, Star, Clock, Award, Bookmark, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
 
 // Sample novels data
@@ -10,7 +11,7 @@ const novels = [
     id: 1,
     title: 'The Spiral Between Us - Book1',
     description: 'A captivating journey through love, connection, and the intricate spirals of human relationships. Discover how two souls intertwine in ways they never imagined.',
-    genre: 'Romance/Fiction',
+    genre: 'Adventure/Fiction',
     publicationDate: 'December 2025',
     status: 'Published',
     image: '/images/novels/the-spiral-between-us.png',
@@ -18,6 +19,16 @@ const novels = [
 ]
 
 export default function NovelsPage() {
+  const [savedNovels, setSavedNovels] = useState<number[]>([])
+
+  const handleSave = (id: number) => {
+    if (savedNovels.includes(id)) {
+      setSavedNovels(savedNovels.filter(novelId => novelId !== id))
+    } else {
+      setSavedNovels([...savedNovels, id])
+    }
+  }
+
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
@@ -115,11 +126,25 @@ export default function NovelsPage() {
                   </div>
 
                   <div className="flex gap-4 pt-4">
-                    <button className="premium-button flex-1 sm:flex-none">
-                      {novel.status === 'Upcoming' ? 'Pre-Order Now' : 'Read Now'}
-                    </button>
-                    <button className="px-6 py-3 border-2 border-premium-gold text-premium-gold font-semibold rounded-lg hover:bg-premium-gold hover:text-premium-black transition-all duration-300">
-                      Preview
+                    <a
+                      href="https://amzn.in/d/1XDszsQ"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="premium-button flex-1 sm:flex-none flex items-center justify-center space-x-2"
+                    >
+                      <ExternalLink size={18} />
+                      <span>View on Amazon</span>
+                    </a>
+                    <button
+                      onClick={() => handleSave(novel.id)}
+                      className={`px-6 py-3 border-2 font-semibold rounded-lg transition-all duration-300 flex items-center space-x-2 ${
+                        savedNovels.includes(novel.id)
+                          ? 'bg-[#FFED4E] border-[#FFED4E] text-black'
+                          : 'border-premium-gold text-premium-gold hover:bg-premium-gold hover:text-premium-black'
+                      }`}
+                    >
+                      <Bookmark size={18} fill={savedNovels.includes(novel.id) ? 'currentColor' : 'none'} />
+                      <span>{savedNovels.includes(novel.id) ? 'Saved' : 'Save'}</span>
                     </button>
                   </div>
                 </div>

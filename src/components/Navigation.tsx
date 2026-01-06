@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, PenLine, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { useAuth } from '@/contexts/AuthContext'
+import AuthModal from './AuthModal'
 
 const navItems = [
-  { name: 'Journal', href: '/' },
+  { name: 'Home', href: '/' },
+  { name: 'Community', href: '/community' },
   { name: 'Anthologies', href: '/anthologies' },
   { name: 'Novels', href: '/novels' },
   { name: 'Quotes', href: '/quotes' },
@@ -18,7 +21,10 @@ const navItems = [
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login')
   const pathname = usePathname()
+  const { user, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +57,7 @@ export default function Navigation() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -68,6 +74,52 @@ export default function Navigation() {
                 }`}></span>
               </Link>
             ))}
+
+            {user ? (
+              <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-neutral-700">
+                <Link
+                  href="/write"
+                  className="flex items-center space-x-2 px-4 py-2 bg-[#FFED4E] text-black font-semibold rounded hover:bg-[#FFE830] transition-colors"
+                >
+                  <PenLine size={18} />
+                  <span>Write</span>
+                </Link>
+                <Link
+                  href={`/writers/${user.username}`}
+                  className="text-sm text-neutral-300 hover:text-[#FFED4E]"
+                >
+                  @{user.username}
+                </Link>
+                <button
+                  onClick={logout}
+                  className="p-2 text-neutral-400 hover:text-red-400 transition-colors"
+                  title="Log out"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3 ml-4 pl-4 border-l border-neutral-700">
+                <button
+                  onClick={() => {
+                    setAuthMode('login')
+                    setShowAuthModal(true)
+                  }}
+                  className="text-sm text-neutral-300 hover:text-[#FFED4E] transition-colors"
+                >
+                  Log In
+                </button>
+                <button
+                  onClick={() => {
+                    setAuthMode('signup')
+                    setShowAuthModal(true)
+                  }}
+                  className="px-4 py-2 bg-[#FFED4E] text-black font-semibold rounded hover:bg-[#FFE830] transition-colors text-sm"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -104,10 +156,68 @@ export default function Navigation() {
                   {item.name}
                 </Link>
               ))}
+
+              {user ? (
+                <div className="pt-4 border-t border-neutral-700 space-y-3">
+                  <Link
+                    href="/write"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center space-x-2 px-4 py-3 bg-[#FFED4E] text-black font-semibold rounded"
+                  >
+                    <PenLine size={18} />
+                    <span>Write</span>
+                  </Link>
+                  <Link
+                    href={`/writers/${user.username}`}
+                    onClick={() => setIsOpen(false)}
+                    className="block text-center text-neutral-300"
+                  >
+                    @{user.username}
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout()
+                      setIsOpen(false)
+                    }}
+                    className="w-full py-2 text-red-400 hover:text-red-300"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-4 border-t border-neutral-700 space-y-3">
+                  <button
+                    onClick={() => {
+                      setAuthMode('login')
+                      setShowAuthModal(true)
+                      setIsOpen(false)
+                    }}
+                    className="w-full py-2 text-neutral-300 hover:text-[#FFED4E] border border-neutral-700 rounded"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthMode('signup')
+                      setShowAuthModal(true)
+                      setIsOpen(false)
+                    }}
+                    className="w-full py-3 bg-[#FFED4E] text-black font-semibold rounded"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authMode}
+      />
     </nav>
   )
 }

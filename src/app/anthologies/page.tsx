@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { BookOpen, Calendar, Heart, Sparkles, Star } from 'lucide-react'
+import { BookOpen, Calendar, Heart, Sparkles, Star, Bookmark, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
 
 // Anthologies data with actual images
@@ -108,6 +109,16 @@ const anthologies = [
 ]
 
 export default function AnthologiesPage() {
+  const [savedAnthologies, setSavedAnthologies] = useState<number[]>([])
+
+  const handleSave = (id: number) => {
+    if (savedAnthologies.includes(id)) {
+      setSavedAnthologies(savedAnthologies.filter(anthId => anthId !== id))
+    } else {
+      setSavedAnthologies([...savedAnthologies, id])
+    }
+  }
+
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
@@ -200,12 +211,25 @@ export default function AnthologiesPage() {
                   </div>
 
                   <div className="flex gap-4 pt-4">
-                    <button className="premium-button flex-1 sm:flex-none">
-                      Read Collection
-                    </button>
-                    <button className="px-6 py-3 border-2 border-premium-gold text-premium-gold font-semibold rounded-lg hover:bg-premium-gold hover:text-premium-black transition-all duration-300 flex items-center space-x-2">
-                      <Heart size={18} />
-                      <span>Save</span>
+                    <a 
+                      href={`https://amazon.in/dp/anthology${anthology.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="premium-button flex-1 sm:flex-none flex items-center justify-center space-x-2"
+                    >
+                      <ExternalLink size={18} />
+                      <span>View on Amazon</span>
+                    </a>
+                    <button 
+                      onClick={() => handleSave(anthology.id)}
+                      className={`px-6 py-3 border-2 font-semibold rounded-lg transition-all duration-300 flex items-center space-x-2 ${
+                        savedAnthologies.includes(anthology.id)
+                          ? 'bg-[#FFED4E] border-[#FFED4E] text-black'
+                          : 'border-premium-gold text-premium-gold hover:bg-premium-gold hover:text-premium-black'
+                      }`}
+                    >
+                      <Bookmark size={18} fill={savedAnthologies.includes(anthology.id) ? 'currentColor' : 'none'} />
+                      <span>{savedAnthologies.includes(anthology.id) ? 'Saved' : 'Save'}</span>
                     </button>
                   </div>
                 </div>
