@@ -45,5 +45,11 @@ export default async function WritingPage({ params }: PageProps) {
     notFound()
   }
 
-  return <WritingDetail writing={writing} />
+  // Serialize the writing data for client component
+  const serializedWriting = {
+    ...writing,
+    createdAt: writing.createdAt.toISOString(),
+  }
+
+  return <WritingDetail writing={serializedWriting} />
 }
